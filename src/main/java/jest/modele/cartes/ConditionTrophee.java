@@ -42,13 +42,13 @@ public enum ConditionTrophee {
     public Joueur evaluer(List<Joueur> joueurs) {
         switch (this) {
             case MAJORITY_AS:
-                return evaluerMajorite(joueurs, null, 1);
+                return evaluerMajorite(joueurs, 1);
             case MAJORITY_DEUX:
-                return evaluerMajorite(joueurs, null, 2);
+                return evaluerMajorite(joueurs, 2);
             case MAJORITY_TROIS:
-                return evaluerMajorite(joueurs, null, 3);
+                return evaluerMajorite(joueurs, 3);
             case MAJORITY_QUATRE:
-                return evaluerMajorite(joueurs, null, 4);
+                return evaluerMajorite(joueurs, 4);
             case HIGHEST_PIQUE:
                 return evaluerCartePlusHaute(joueurs, Couleur.PIQUE);
             case HIGHEST_TREFLE:
