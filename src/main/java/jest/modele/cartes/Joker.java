@@ -39,7 +39,11 @@ public class Joker extends Carte {
     @Override
     public int getValeurEffective(Jest jest) {
         int nbCoeurs = jest.compterCartesCouleur(Couleur.COEUR);
-        return nbCoeurs == 0 ? 4 : 0;
+        if (nbCoeurs == 0) {
+            return 4;
+        } else {
+            return 0;
+        }
     }
     
     /**

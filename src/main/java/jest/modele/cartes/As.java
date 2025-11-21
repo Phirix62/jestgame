@@ -25,7 +25,11 @@ public class As extends Carte {
     @Override
     public int getValeurEffective(Jest jest) {
         int nbCartesCouleur = jest.compterCartesCouleur(this.couleur);
-        return nbCartesCouleur == 1 ? 5 : 1;
+        if (nbCartesCouleur == 1) {
+            return 5;
+        } else {
+            return 1;
+        }
     }
     
     /**
