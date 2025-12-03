@@ -1,6 +1,5 @@
 package jest.modele.cartes;
 
-import jest.modele.joueurs.Jest;
 import jest.modele.joueurs.Joueur;
 import java.util.List;
 
@@ -116,7 +115,7 @@ public enum ConditionTrophee {
         Carte carteMax = null;
         
         for (Joueur j : joueurs) {
-            Carte carte = j.getJest().getCartePlusHaute(couleur);
+            Carte carte = j.getJest().getCartePlusHauteCouleur(couleur);
             if (carte != null && (carteMax == null || carte.comparerForce(carteMax) > 0)) {
                 carteMax = carte;
                 gagnant = j;

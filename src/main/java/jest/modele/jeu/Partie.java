@@ -161,7 +161,7 @@ public class Partie {
         System.out.println("\n--- Révélation des Jests ---");
         for (Joueur joueur : joueurs) {
             joueur.getJest().revelerCartes();
-            System.out.println(joueur.getNom() + " : " + joueur.getJest().afficherDetaille());
+            System.out.println(joueur.getNom() + " : " + joueur.getJest().afficherDetails());
         }
         
         // Calculer les scores de base (sans trophées)
