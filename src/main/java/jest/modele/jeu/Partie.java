@@ -191,11 +191,11 @@ public class Partie {
             Joueur gagnant = trophee.evaluerCondition(joueurs);
             if (gagnant != null) {
                 gagnant.getJest().ajouterTrophee(trophee);
-                System.out.println("🏆 " + trophee.getCondition().getDescription() + 
-                                 " → " + gagnant.getNom());
+                System.out.println("Trophée " + trophee.getCondition().getDescription() + 
+                                 " --> " + gagnant.getNom());
             } else {
-                System.out.println("🏆 " + trophee.getCondition().getDescription() + 
-                                 " → Aucun gagnant");
+                System.out.println("Trophée " + trophee.getCondition().getDescription() + 
+                                 " --> Aucun gagnant");
             }
         }
     }
@@ -258,11 +258,11 @@ public class Partie {
             Joueur j = classement.get(i);
             String rang = (i + 1) + ". ";
             String trophees = j.getJest().getTrophees().isEmpty() ? "" : 
-                            " 🏆×" + j.getJest().getTrophees().size();
+                            " Trophée*" + j.getJest().getTrophees().size();
             System.out.println(rang + j.getNom() + " : " + j.getScore() + " points" + trophees);
         }
         
-        System.out.println("\n🎉 VAINQUEUR : " + gagnant.getNom() + " 🎉");
+        System.out.println("\n** VAINQUEUR : " + gagnant.getNom() + " **");
         System.out.println("═══════════════════════════════════\n");
     }
     

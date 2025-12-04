@@ -58,7 +58,7 @@ public class Joker extends Carte {
     
     @Override
     public String toString() {
-        return "Joker 🃏";
+        return "Joker ";
     }
     
     @Override

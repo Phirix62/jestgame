@@ -16,7 +16,7 @@ public abstract class Carte {
      * Constructeur de Carte.
      * 
      * @param couleur       Couleur de la carte
-     * @param valeurFaciale Valeur imprimée sur la carte (1-4, 0 pour Joker)
+     * @param valeurFaciale Valeur imprimée sur la carte (1-5, 0 pour Joker)
      */
     public Carte(Couleur couleur, int valeurFaciale) {
         this.couleur = couleur;

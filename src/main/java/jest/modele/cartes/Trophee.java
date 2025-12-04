@@ -78,6 +78,6 @@ public class Trophee extends Carte {
     
     @Override
     public String toStringCourt() {
-        return "🏆" + valeurFaciale + couleur.getSymbole();
+        return "Trophée " + valeurFaciale + couleur.getSymbole();
     }
 }

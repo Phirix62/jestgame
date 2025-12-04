@@ -41,7 +41,7 @@ public class Main {
         System.out.println("\n");
         System.out.println("╔═══════════════════════════════════╗");
         System.out.println("║                                   ║");
-        System.out.println("║            🃏 JEST 🃏             ║");
+        System.out.println("║                JEST               ║");
         System.out.println("║                                   ║");
         System.out.println("║      Jeu de cartes stratégique    ║");
         System.out.println("║                                   ║");
@@ -121,7 +121,7 @@ public class Main {
             }
             
             joueurs.add(joueur);
-            System.out.println("  ✓ " + joueur.getNom() + " créé\n");
+            System.out.println("  joueur " + joueur.getNom() + " créé\n");
         }
         
         return joueurs;
