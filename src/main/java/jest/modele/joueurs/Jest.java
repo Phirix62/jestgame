@@ -2,6 +2,8 @@ package jest.modele.joueurs;
 
 import jest.modele.cartes.*;
 import jest.modele.score.VisiteurScore;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,7 +12,8 @@ import java.util.stream.Collectors;
  * Représente le Jest (collection de cartes) d'un joueur.
  * Le Jest accumule les cartes collectées durant la partie.
  */
-public class Jest {
+public class Jest implements Serializable{
+    private static final long serialVersionUID = 1L;
     private List<Carte> cartes;
     private List<Trophee> trophees;
     

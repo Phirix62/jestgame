@@ -2,6 +2,8 @@ package jest.modele.joueurs;
 
 import jest.modele.cartes.Carte;
 import jest.modele.jeu.Offre;
+
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -9,7 +11,8 @@ import java.util.List;
  * Définit les comportements communs et les méthodes abstraites à implémenter.
  * Design pattern template : squelette défini, détails dans sous-classes.
  */
-public abstract class Joueur {
+public abstract class Joueur implements Serializable {
+    private static final long serialVersionUID = 1L;
     protected String nom;
     protected Jest jest;
     protected int scoreCalcule;

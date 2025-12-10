@@ -1,13 +1,16 @@
 package jest.modele.jeu;
 
 import jest.modele.cartes.Carte;
+
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Représente la pioche du jeu Jest.
  * Les cartes sont empilées et piochées du dessus (comportement Stack).
  */
-public class Pioche {
+public class Pioche implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Stack<Carte> cartes;
     private Random random;
     
@@ -67,6 +70,14 @@ public class Pioche {
      */
     public int getTaille() {
         return cartes.size();
+    }
+
+    /**
+     * Retourne une copie des cartes dans la pioche.
+     * @return Liste des cartes
+     */
+    public List<Carte> getCartes() {
+        return new ArrayList<>(cartes);
     }
     
     /**

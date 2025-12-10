@@ -3,12 +3,13 @@ package jest.modele.joueurs;
 import jest.modele.cartes.Carte;
 import jest.modele.jeu.Offre;
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * Interface définissant le contrat pour les stratégies de jeu des joueurs virtuels.
  * Pattern Strategy : permet de changer le comportement des IA sans modifier JoueurVirtuel.
  */
-public interface StrategieJeu {
+public interface StrategieJeu extends Serializable {
     
     /**
      * Choisit quelle carte jouer face cachée dans l'offre.

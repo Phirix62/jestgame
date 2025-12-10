@@ -2,6 +2,8 @@ package jest.modele.score;
 
 import jest.modele.cartes.Trophee;
 import jest.modele.joueurs.Jest;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +12,8 @@ import java.util.List;
  * Utilise le pattern Visitor pour appliquer les règles de scoring.
  * Orchestre plusieurs visiteurs et agrège leurs résultats.
  */
-public class CalculateurScore {
+public class CalculateurScore implements Serializable {
+    private static final long serialVersionUID = 1L;
     private List<VisiteurScore> visiteurs;
     
     /**

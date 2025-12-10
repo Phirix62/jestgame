@@ -2,6 +2,8 @@ package jest.modele.jeu;
 
 import jest.modele.cartes.Carte;
 import jest.modele.joueurs.Joueur;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +11,8 @@ import java.util.List;
  * Représente une offre de 2 cartes (1 visible, 1 cachée) faite par un joueur.
  * Une offre est créée à chaque tour et peut perdre des cartes quand les autres joueurs piochent.
  */
-public class Offre {
+public class Offre implements Serializable{
+    private static final long serialVersionUID = 1L;
     private Carte carteVisible;
     private Carte carteCachee;
     private Joueur proprietaire;

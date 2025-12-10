@@ -4,13 +4,14 @@ import jest.modele.joueurs.Joueur;
 import jest.modele.joueurs.Jest;
 import jest.modele.score.VisiteurScore;
 import java.util.List;
-
+import java.io.Serializable;
 /**
  * Représente un trophée du jeu Jest.
  * Un trophée est une carte spéciale avec une condition d'attribution.
  * Le joueur qui remporte le trophée l'ajoute à son Jest (effet sur le score).
  */
-public class Trophee extends Carte {
+public class Trophee extends Carte implements Serializable {
+    private static final long serialVersionUID = 1L;
     private ConditionTrophee condition;
     
     /**
@@ -31,7 +32,6 @@ public class Trophee extends Carte {
     public ConditionTrophee getCondition() {
         return condition;
     }
-    
     /**
      * Évalue la condition et détermine quel joueur gagne ce trophée.
      * @param joueurs Liste des joueurs en compétition

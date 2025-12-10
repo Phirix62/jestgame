@@ -1,6 +1,7 @@
 package jest.modele;
 import jest.modele.jeu.Partie;
 import jest.modele.joueurs.*;
+
 import java.util.*;
 
 /**
@@ -13,25 +14,20 @@ public class Main {
     public static void main(String[] args) {
         afficherBanniere();
         
-        // Configuration de la partie
-        int nbJoueurs = choisirNombreJoueurs();
-        List<Joueur> joueurs = creerJoueurs(nbJoueurs);
-        boolean avecExtension = choisirExtensions();
-        
-        // Créer et initialiser la partie
-        Partie partie = new Partie();
-        partie.initialiser(joueurs, avecExtension);
-        
-        // Démarrer la partie
-        partie.demarrer();
-        
-        // Demander si rejouer
-        if (demanderRejouer()) {
-            main(args); // Relancer
-        } else {
-            System.out.println("\nMerci d'avoir joué à Jest !");
-            scanner.close();
+        boolean continuer = true;
+        while (continuer) {
+            Partie partie = menuPrincipal();
+            
+            if (partie == null) {
+                continuer = false;
+            } else {
+                jouerPartie(partie);
+                continuer = demanderRejouer();
+            }
         }
+        
+        System.out.println("\nMerci d'avoir joué à Jest !");
+        scanner.close();
     }
     
     /**
@@ -47,6 +43,140 @@ public class Main {
         System.out.println("║                                   ║");
         System.out.println("╚═══════════════════════════════════╝");
         System.out.println();
+    }
+
+    /**
+     * Affiche le menu principal et retourne la partie à jouer.
+     * @return Partie à jouer ou null pour quitter
+     */
+    private static Partie menuPrincipal() {
+        System.out.println("\n=== MENU PRINCIPAL ===\n");
+        System.out.println("1. Nouvelle partie");
+        System.out.println("2. Charger une partie");
+        System.out.println("3. Quitter");
+        System.out.print("\nChoix : ");
+        
+        int choix = lireChoix(1, 3);
+        
+        switch (choix) {
+            case 1:
+                return nouvellePartie();
+            case 2:
+                return chargerPartie();
+            case 3:
+                return null;
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Gère la boucle de jeu avec options de sauvegarde.
+     * @param partie Partie à jouer
+     */
+    private static void jouerPartie(Partie partie) {
+        while (!partie.estTerminee()) {
+            // Menu d'options avant chaque tour
+            System.out.println("\n--- Options ---");
+            System.out.println("1. Continuer le jeu");
+            System.out.println("2. Sauvegarder et continuer");
+            System.out.println("3. Sauvegarder et quitter");
+            System.out.print("Choix : ");
+            
+            int choix = lireChoix(1, 3);
+            
+            // Sauvegarder si demandé
+            if (choix == 2 || choix == 3) {
+                if (sauvegarderPartie(partie)) {
+                    if (choix == 3) {
+                        System.out.println("\nPartie sauvegardée. À bientôt !");
+                        return;
+                    }
+                }
+            }
+            
+            // Exécuter le tour
+            partie.executerProchainTour();
+        }
+        
+        // Afficher les résultats finaux
+        partie.afficherResultatsFinaux();
+    }
+
+    /**
+     * Crée et configure une nouvelle partie.
+     * @return Nouvelle partie initialisée
+     */
+    private static Partie nouvellePartie() {
+        int nbJoueurs = choisirNombreJoueurs();
+        List<Joueur> joueurs = creerJoueurs(nbJoueurs);
+        boolean avecExtension = choisirExtensions();
+        
+        Partie partie = new Partie();
+        partie.initialiser(joueurs, avecExtension);
+        
+        System.out.println("\nPartie initialisée avec succès !\n");
+        return partie;
+    }
+
+     /**
+     * Charge une partie sauvegardée.
+     * @return Partie chargée ou null si annulé
+     */
+    private static Partie chargerPartie() {
+        List<String> sauvegardes = Partie.listerSauvegardes();
+        
+        if (sauvegardes.isEmpty()) {
+            System.out.println("\nAucune sauvegarde disponible.");
+            return null;
+        }
+        
+        System.out.println("\n=== SAUVEGARDES DISPONIBLES ===\n");
+        for (int i = 0; i < sauvegardes.size(); i++) {
+            System.out.println((i + 1) + ". " + sauvegardes.get(i));
+        }
+        System.out.println((sauvegardes.size() + 1) + ". Annuler");
+        
+        System.out.print("\nChoix : ");
+        int choix = lireChoix(1, sauvegardes.size() + 1);
+        
+        if (choix == sauvegardes.size() + 1) {
+            return null;
+        }
+        
+        try {
+            String nomFichier = sauvegardes.get(choix - 1);
+            Partie partie = Partie.charger(nomFichier);
+            System.out.println("\nPartie chargée avec succès !");
+            System.out.println("Reprise au tour " + partie.getTourActuel() + "\n");
+            return partie;
+        } catch (Exception e) {
+            System.out.println("\nErreur lors du chargement : " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Sauvegarde la partie en cours.
+     * @param partie Partie à sauvegarder
+     * @return true si sauvegarde réussie
+     */
+    private static boolean sauvegarderPartie(Partie partie) {
+        System.out.print("\nNom de la sauvegarde : ");
+        String nom = scanner.nextLine().trim();
+        
+        if (nom.isEmpty()) {
+            nom = "partie_" + System.currentTimeMillis();
+        }
+        
+        try {
+            partie.sauvegarder(nom);
+            System.out.println("✓ Partie sauvegardée avec succès !");
+            return true;
+        } catch (Exception e) {
+            System.out.println("✗ Erreur lors de la sauvegarde : " + e.getMessage());
+            return false;
+        }
     }
     
     /**

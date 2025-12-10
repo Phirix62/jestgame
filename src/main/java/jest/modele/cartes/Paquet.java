@@ -1,5 +1,6 @@
 package jest.modele.cartes;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,7 +10,8 @@ import java.util.Random;
  * Représente le paquet complet de cartes du jeu Jest.
  * Contient les 16 cartes standard + Joker + éventuellement des extensions.
  */
-public class Paquet {
+public class Paquet implements Serializable{
+    private static final long serialVersionUID = 1L;
     private List<Carte> cartes;
     private Random random;
     
