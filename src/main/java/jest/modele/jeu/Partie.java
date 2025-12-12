@@ -408,6 +408,16 @@ public class Partie implements Serializable {
         return pioche.getCartes();
     }
 
+    /**
+     * Restaure l'état de la partie depuis une sauvegarde.
+     * 
+     * @param joueurs                Liste des joueurs
+     * @param cartesRestantesPioche  Cartes restantes dans la pioche
+     * @param tropheesEnJeu          Trophées en jeu
+     * @param tourActuel             Numéro du tour actuel
+     * @param extensionActive        Si l'extension est active
+     * @param cartesResiduelles      Cartes résiduelles
+     */
     public void restaurerDepuisSauvegarde(
             List<Joueur> joueurs,
             List<Carte> cartesRestantesPioche,
