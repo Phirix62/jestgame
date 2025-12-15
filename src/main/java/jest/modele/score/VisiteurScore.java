@@ -2,6 +2,7 @@ package jest.modele.score;
 
 import jest.modele.cartes.*;
 import jest.modele.joueurs.Jest;
+import jest.modele.extensions.ExtensionMagique;
 
 /**
  * Interface du pattern Visitor pour le calcul des scores.
@@ -22,13 +23,20 @@ public interface VisiteurScore {
      * @param contexte Jest contenant le Joker
      */
     void visiterJoker(Joker joker, Jest contexte);
-    
+
+    /**
+     * Visite 
+     * @param carte
+     * @param contexte
+     */
+    default void visiterCarteExtension(Carte carte, Jest contexte){}; // ne fait rien par défaut
+
     /**
      * Retourne le score partiel calculé par ce visiteur.
      * @return Score partiel
      */
     int getScorePartiel();
-    
+
     /**
      * Réinitialise le score partiel (pour nouvelle évaluation).
      */

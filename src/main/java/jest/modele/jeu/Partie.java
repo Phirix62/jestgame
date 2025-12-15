@@ -4,6 +4,7 @@ import jest.modele.cartes.*;
 import jest.modele.joueurs.Joueur;
 import jest.modele.score.CalculateurScore;
 import jest.utilitaires.GestionnaireSauvegarde;
+import jest.modele.extensions.*;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -15,7 +16,7 @@ import java.util.*;
  * Pattern Façade : point d'entrée unique pour toute l'application.
  */
 public class Partie implements Serializable {
-
+    private static final long serialVersionUID = 1L;
     private List<Joueur> joueurs;
     private Paquet paquet;
     private Pioche pioche;
@@ -23,6 +24,7 @@ public class Partie implements Serializable {
     private int tourActuel;
     private boolean extensionActive;
     private CalculateurScore calculateur;
+    private Extension extension;
 
     /**
      * Constructeur de Partie.
@@ -32,26 +34,26 @@ public class Partie implements Serializable {
         this.paquet = new Paquet();
         this.tropheesEnJeu = new ArrayList<>();
         this.tourActuel = 0;
-        this.extensionActive = false;
         this.calculateur = new CalculateurScore();
+        this.extension = null;
     }
 
     /**
      * Initialise la partie avec les joueurs.
      * 
-     * @param joueurs       Liste des joueurs (3 ou 4)
-     * @param avecExtension true pour activer les extensions
+     * @param joueurs   Liste des joueurs (3 ou 4)
+     * @param extension Extension choisie (null si aucune)
      */
-    public void initialiser(List<Joueur> joueurs, boolean avecExtension) {
+    public void initialiser(List<Joueur> joueurs, Extension extension) {
         if (joueurs.size() < 3 || joueurs.size() > 4) {
             throw new IllegalArgumentException("Le jeu nécessite 3 ou 4 joueurs");
         }
 
         this.joueurs = new ArrayList<>(joueurs);
-        this.extensionActive = avecExtension;
+        this.extension = extension;
 
         // Initialiser et mélanger le paquet
-        paquet.initialiser(avecExtension);
+        paquet.initialiser(extension);
         paquet.melanger();
 
         // Placer les trophées
@@ -78,6 +80,10 @@ public class Partie implements Serializable {
         System.out.println("Joueurs : " + joueurs.size());
         for (Joueur j : joueurs) {
             System.out.println("  - " + j.getNom());
+        }
+        if (extension != null) {
+            System.out.println("\nExtension utilisée : " + extension.getNom());
+            System.out.println(extension.getDescription());
         }
         System.out.println("\nTrophées en jeu :");
         for (Trophee t : tropheesEnJeu) {
@@ -217,8 +223,9 @@ public class Partie implements Serializable {
             Joueur gagnant = trophee.evaluerCondition(joueurs);
             if (gagnant != null) {
                 gagnant.getJest().ajouterTrophee(trophee);
-                System.out.println("Trophée " + trophee.getCondition().getDescription() +
-                        " --> " + gagnant.getNom());
+                System.out.println(
+                        "Trophée " + trophee.getCondition().getDescription() + "(" + trophee.toStringCourt() + ") " +
+                                " --> " + gagnant.getNom());
             } else {
                 System.out.println("Trophée " + trophee.getCondition().getDescription() +
                         " --> Aucun gagnant");
@@ -373,6 +380,15 @@ public class Partie implements Serializable {
     }
 
     /**
+     * Retourne l'extension utilisée.
+     * 
+     * @return Extension
+     */
+    public Extension getExtension() {
+        return extension;
+    }
+
+    /**
      * Indique si l'extension est active.
      * 
      * @return true si extension active
@@ -411,24 +427,24 @@ public class Partie implements Serializable {
     /**
      * Restaure l'état de la partie depuis une sauvegarde.
      * 
-     * @param joueurs                Liste des joueurs
-     * @param cartesRestantesPioche  Cartes restantes dans la pioche
-     * @param tropheesEnJeu          Trophées en jeu
-     * @param tourActuel             Numéro du tour actuel
-     * @param extensionActive        Si l'extension est active
-     * @param cartesResiduelles      Cartes résiduelles
+     * @param joueurs               Liste des joueurs
+     * @param cartesRestantesPioche Cartes restantes dans la pioche
+     * @param tropheesEnJeu         Trophées en jeu
+     * @param tourActuel            Numéro du tour actuel
+     * @param extension             Extension
+     * @param cartesResiduelles     Cartes résiduelles
      */
     public void restaurerDepuisSauvegarde(
             List<Joueur> joueurs,
             List<Carte> cartesRestantesPioche,
             List<Trophee> tropheesEnJeu,
             int tourActuel,
-            boolean extensionActive,
+            Extension extension,
             List<Carte> cartesResiduelles) {
 
         this.joueurs = joueurs;
         this.tourActuel = tourActuel;
-        this.extensionActive = extensionActive;
+        this.extension = extension;
         this.tropheesEnJeu = new ArrayList<>(tropheesEnJeu);
         this.cartesResiduelles = cartesResiduelles != null ? new ArrayList<>(cartesResiduelles) : new ArrayList<>();
 

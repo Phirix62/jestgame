@@ -8,7 +8,8 @@ public enum Couleur {
     PIQUE(4, "_PI"),
     TREFLE(3, "_TR"),
     CARREAU(2, "_CA"),
-    COEUR(1, "_CO");
+    COEUR(1, "_CO"),
+    SPECIALE(0, "_SP"); // Pour les cartes spéciales (Joker et extensions)
     
     private final int force;
     private final String symbole;

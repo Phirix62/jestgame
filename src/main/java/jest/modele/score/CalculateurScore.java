@@ -27,6 +27,7 @@ public class CalculateurScore implements Serializable {
         visiteurs.add(new VisiteurCarreaux());
         visiteurs.add(new VisiteurCoeurs());
         visiteurs.add(new VisiteurPairesNoires());
+        visiteurs.add(new VisiteurExtensionMagique());
     }
     
     /**
@@ -102,8 +103,9 @@ public class CalculateurScore implements Serializable {
         sb.append("  Piques:        ").append(visiteurs.get(0).getScorePartiel()).append("\n");
         sb.append("  Trèfles:       ").append(visiteurs.get(1).getScorePartiel()).append("\n");
         sb.append("  Carreaux:      ").append(visiteurs.get(2).getScorePartiel()).append("\n");
-        sb.append("  Cœurs/Joker:   ").append(visiteurs.get(3).getScorePartiel()).append("\n");
+        sb.append("  Coeurs/Joker:   ").append(visiteurs.get(3).getScorePartiel()).append("\n");
         sb.append("  Paires noires: ").append(visiteurs.get(4).getScorePartiel()).append("\n");
+        sb.append("  Extension Magique: ").append(visiteurs.get(5).getScorePartiel()).append("\n");
         
         int scoreBase = 0;
         for (VisiteurScore v : visiteurs) {

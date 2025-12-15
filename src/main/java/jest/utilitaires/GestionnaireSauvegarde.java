@@ -4,6 +4,7 @@ import jest.modele.jeu.Partie;
 import jest.modele.joueurs.*;
 import jest.modele.cartes.*;
 import jest.modele.jeu.Pioche;
+import jest.modele.extensions.Extension;
 
 import java.io.*;
 import java.util.*;
@@ -105,7 +106,7 @@ class SauvegardePartie implements Serializable {
     private List<Carte> cartesRestantesPioche;
     private List<Trophee> tropheesEnJeu;
     private int tourActuel;
-    private boolean extensionActive;
+    private Extension extension;
     private List<Carte> cartesResiduelles;
     
     /**
@@ -124,7 +125,7 @@ class SauvegardePartie implements Serializable {
         
         this.tropheesEnJeu = new ArrayList<>(partie.getTropheesEnJeu());
         this.tourActuel = partie.getTourActuel();
-        this.extensionActive = partie.isExtensionActive();
+        this.extension = partie.getExtension();
         this.cartesResiduelles = partie.getCartesResiduelles();
     }
     
@@ -147,7 +148,7 @@ class SauvegardePartie implements Serializable {
             cartesRestantesPioche, 
             tropheesEnJeu, 
             tourActuel, 
-            extensionActive, 
+            extension, 
             cartesResiduelles
         );
     

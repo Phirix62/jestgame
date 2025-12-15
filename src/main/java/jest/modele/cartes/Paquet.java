@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import jest.modele.extensions.*;
 
 /**
  * Représente le paquet complet de cartes du jeu Jest.
@@ -26,13 +27,16 @@ public class Paquet implements Serializable{
     
     /**
      * Initialise le paquet avec les cartes de base et optionnellement des extensions.
-     * @param avecExtension true pour inclure les cartes d'extension
+     * @param extension Extension choisie (null si aucune)
      */
-    public void initialiser(boolean avecExtension) {
+    public void initialiser(Extension extension) {
         cartes.clear();
         
         // Ajouter les 16 cartes standard (4 couleurs × 4 valeurs)
         for (Couleur couleur : Couleur.values()) {
+            if (couleur == Couleur.SPECIALE) {
+                continue; // cartes spéciales créées plus tard
+            }
             // Ajouter l'As (classe spéciale)
             cartes.add(new As(couleur));
             
@@ -45,9 +49,8 @@ public class Paquet implements Serializable{
         // Ajouter le Joker
         cartes.add(new Joker());
         
-        // TODO: Ajouter cartes d'extension si activées
-        if (avecExtension) {
-            // Extension à implémenter
+        if (extension != null) {
+            cartes.addAll(extension.getCartesSupplementaires());
         }
     }
     
