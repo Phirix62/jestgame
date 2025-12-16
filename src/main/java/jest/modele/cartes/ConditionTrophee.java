@@ -1,6 +1,5 @@
 package jest.modele.cartes;
 
-import jest.modele.joueurs.Jest;
 import jest.modele.joueurs.Joueur;
 import java.util.List;
 
@@ -15,11 +14,11 @@ public enum ConditionTrophee {
     HIGHEST_PIQUE("Pique le plus haut"),
     HIGHEST_TREFLE("Trèfle le plus haut"),
     HIGHEST_CARREAU("Carreau le plus haut"),
-    HIGHEST_COEUR("Cœur le plus haut"),
+    HIGHEST_COEUR("Coeur le plus haut"),
     LOWEST_PIQUE("Pique le plus bas"),
     LOWEST_TREFLE("Trèfle le plus bas"),
     LOWEST_CARREAU("Carreau le plus bas"),
-    LOWEST_COEUR("Cœur le plus bas"),
+    LOWEST_COEUR("Coeur le plus bas"),
     HAS_JOKER("Possède le Joker"),
     BEST_JEST("Meilleur Jest"),
     BEST_JEST_NO_JOKER("Meilleur Jest sans Joker");
@@ -116,7 +115,7 @@ public enum ConditionTrophee {
         Carte carteMax = null;
         
         for (Joueur j : joueurs) {
-            Carte carte = j.getJest().getCartePlusHaute(couleur);
+            Carte carte = j.getJest().getCartePlusHauteCouleur(couleur);
             if (carte != null && (carteMax == null || carte.comparerForce(carteMax) > 0)) {
                 carteMax = carte;
                 gagnant = j;

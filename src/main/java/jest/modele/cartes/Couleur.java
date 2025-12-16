@@ -5,10 +5,11 @@ package jest.modele.cartes;
  * Hiérarchie de force : PIQUE > TREFLE > CARREAU > COEUR
  */
 public enum Couleur {
-    PIQUE(4, "♠"),
-    TREFLE(3, "♣"),
-    CARREAU(2, "♦"),
-    COEUR(1, "♥");
+    PIQUE(4, "_PI"),
+    TREFLE(3, "_TR"),
+    CARREAU(2, "_CA"),
+    COEUR(1, "_CO"),
+    SPECIALE(0, "_SP"); // Pour les cartes spéciales (Joker et extensions)
     
     private final int force;
     private final String symbole;
@@ -50,6 +51,6 @@ public enum Couleur {
     
     @Override
     public String toString() {
-        return this.name() + " " + symbole;
+        return this.name();
     }
 }

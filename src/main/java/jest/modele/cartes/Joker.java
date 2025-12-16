@@ -15,7 +15,7 @@ public class Joker extends Carte {
      * Le Joker n'a pas de couleur réelle (on utilise arbitrairement COEUR).
      */
     public Joker() {
-        super(Couleur.COEUR, 0); // Couleur arbitraire
+        super(Couleur.SPECIALE, 0); // Couleur arbitraire
     }
     
     /**
@@ -58,7 +58,7 @@ public class Joker extends Carte {
     
     @Override
     public String toString() {
-        return "Joker 🃏";
+        return "Joker ";
     }
     
     @Override

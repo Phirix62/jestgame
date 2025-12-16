@@ -1,13 +1,17 @@
 package jest.modele.cartes;
 
 import jest.modele.score.VisiteurScore;
+
+import java.io.Serializable;
+
 import jest.modele.joueurs.Jest;
 
 /**
  * Classe abstraite représentant une carte générique du jeu Jest.
  * Une carte possède une couleur, une valeur faciale et un état de visibilité.
  */
-public abstract class Carte {
+public abstract class Carte implements Serializable {
+    private static final long serialVersionUID = 1L;
     protected Couleur couleur;
     protected int valeurFaciale;
     protected boolean estVisible;
@@ -16,7 +20,7 @@ public abstract class Carte {
      * Constructeur de Carte.
      * 
      * @param couleur       Couleur de la carte
-     * @param valeurFaciale Valeur imprimée sur la carte (1-4, 0 pour Joker)
+     * @param valeurFaciale Valeur imprimée sur la carte (1-5, 0 pour Joker)
      */
     public Carte(Couleur couleur, int valeurFaciale) {
         this.couleur = couleur;

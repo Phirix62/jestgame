@@ -1,14 +1,17 @@
 package jest.modele.cartes;
 
 import jest.modele.joueurs.Joueur;
+import jest.modele.joueurs.Jest;
+import jest.modele.score.VisiteurScore;
 import java.util.List;
-
+import java.io.Serializable;
 /**
  * Représente un trophée du jeu Jest.
  * Un trophée est une carte spéciale avec une condition d'attribution.
  * Le joueur qui remporte le trophée l'ajoute à son Jest (effet sur le score).
  */
-public class Trophee extends Carte {
+public class Trophee extends Carte implements Serializable {
+    private static final long serialVersionUID = 1L;
     private ConditionTrophee condition;
     
     /**
@@ -29,7 +32,6 @@ public class Trophee extends Carte {
     public ConditionTrophee getCondition() {
         return condition;
     }
-    
     /**
      * Évalue la condition et détermine quel joueur gagne ce trophée.
      * @param joueurs Liste des joueurs en compétition
@@ -53,7 +55,7 @@ public class Trophee extends Carte {
      * @return Valeur faciale
      */
     @Override
-    public int getValeurEffective(modele.joueurs.Jest jest) {
+    public int getValeurEffective(Jest jest) {
         return valeurFaciale;
     }
     
@@ -63,7 +65,7 @@ public class Trophee extends Carte {
      * @param contexte Contexte (ignoré)
      */
     @Override
-    public void accepter(modele.score.VisiteurScore visiteur, modele.joueurs.Jest contexte) {
+    public void accepter(VisiteurScore visiteur, Jest contexte) {
         // Les trophées ne participent pas au pattern Visitor
         // Leur effet est appliqué directement via getEffetScore()
     }
@@ -76,6 +78,6 @@ public class Trophee extends Carte {
     
     @Override
     public String toStringCourt() {
-        return "🏆" + valeurFaciale + couleur.getSymbole();
+        return "Trophée " + valeurFaciale + couleur.getSymbole();
     }
 }
