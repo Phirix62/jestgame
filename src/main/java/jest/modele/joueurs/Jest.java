@@ -223,6 +223,7 @@ public class Jest implements Serializable{
         sb.append(cartes.stream()
                 .map(Carte::toString)
                 .collect(Collectors.joining(", ")));
+        // TODO revoir affichage trophées
         //sb.append(" | Trophées: ");
         //sb.append(trophees.stream()
         //       .map(Trophee::toString)

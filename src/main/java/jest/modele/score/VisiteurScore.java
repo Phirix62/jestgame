@@ -2,7 +2,6 @@ package jest.modele.score;
 
 import jest.modele.cartes.*;
 import jest.modele.joueurs.Jest;
-import jest.modele.extensions.ExtensionMagique;
 
 /**
  * Interface du pattern Visitor pour le calcul des scores.

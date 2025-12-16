@@ -1,6 +1,5 @@
 package jest.modele.score;
 
-import jest.modele.cartes.Trophee;
 import jest.modele.joueurs.Jest;
 
 import java.io.Serializable;

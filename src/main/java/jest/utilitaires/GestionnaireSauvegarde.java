@@ -3,7 +3,6 @@ package jest.utilitaires;
 import jest.modele.jeu.Partie;
 import jest.modele.joueurs.*;
 import jest.modele.cartes.*;
-import jest.modele.jeu.Pioche;
 import jest.modele.extensions.Extension;
 
 import java.io.*;

@@ -199,7 +199,7 @@ public class Partie implements Serializable {
             int score = calculateur.calculerScore(joueur.getJest(), true);
             joueur.setScore(score);
         }
-
+        // TODO afficher scores sans trophées pour lisibilité
         attribuerTrophees();
 
         // Recalculer les scores finaux (avec trophées)
@@ -294,17 +294,6 @@ public class Partie implements Serializable {
 
         System.out.println("\n** VAINQUEUR : " + gagnant.getNom() + " **");
         System.out.println("═══════════════════════════════════\n");
-    }
-
-    /**
-     * Génère une condition de trophée aléatoire.
-     * 
-     * @return Condition aléatoire
-     */
-    private ConditionTrophee genererConditionAleatoire() {
-        ConditionTrophee[] conditions = ConditionTrophee.values();
-        Random rand = new Random();
-        return conditions[rand.nextInt(conditions.length)];
     }
 
     /**
