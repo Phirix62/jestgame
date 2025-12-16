@@ -59,16 +59,12 @@ public class Partie implements Serializable {
         // Placer les trophées
         int nbTrophees = joueurs.size() == 3 ? 2 : 1;
         List<Carte> cartesTrophees = paquet.distribuer(nbTrophees);
-
+        
         for (Carte carte : cartesTrophees) {
-            if (carte instanceof Trophee) {
-                tropheesEnJeu.add((Trophee) carte);
-            } else {
-                // Créer un trophée à partir d'une carte normale
-                ConditionTrophee condition = genererConditionAleatoire();
-                Trophee trophee = new Trophee(carte.getCouleur(), carte.getValeurFaciale(), condition);
-                tropheesEnJeu.add(trophee);
-            }
+            // Créer un trophée à partir de la carte tirée
+            // La condition est déterminée automatiquement selon couleur + valeur
+            Trophee trophee = new Trophee(carte);
+            tropheesEnJeu.add(trophee);
         }
 
         // Créer la pioche avec les cartes restantes
