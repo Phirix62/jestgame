@@ -116,9 +116,10 @@ public class Main {
         int nbJoueurs = choisirNombreJoueurs();
         List<Joueur> joueurs = creerJoueurs(nbJoueurs);
         Extension extension = choisirExtensions(joueurs.size());
+        Variante variante = choisirVariante();
 
         Partie partie = new Partie();
-        partie.initialiser(joueurs, extension);
+        partie.initialiser(joueurs, extension, variante);
 
         System.out.println("\nPartie initialisée avec succès !\n");
         return partie;
@@ -267,7 +268,7 @@ public class Main {
     }
 
     /**
-     * Demande si les extensions doivent être activées.
+     * Choisir l'extension à utiliser pour la partie
      * 
      * @return true si extensions activées
      */
@@ -284,6 +285,30 @@ public class Main {
             return extension;
         }
         return null;
+    }
+
+    /**
+     * Choisir la variante de règles à utiliser pour la partie
+     * 
+     * @return Variante choisie
+     */
+    private static Variante choisirVariante() {
+        System.out.println("Choisir une variante de règles : ");
+        System.out.println("    1. Standard");
+        System.out.println("    2. Tactique");
+        System.out.println("    3. Partie Rapide");
+        System.out.print("  Choix (1-3) : ");
+
+        int choix = lireChoix(1, 3);
+        switch (choix) {
+            case 2:
+                return new VarianteTactique();
+            case 3:
+                return new VarianteRapide();
+            case 1:
+            default:
+                return new VarianteStandard();
+        }
     }
 
     /**

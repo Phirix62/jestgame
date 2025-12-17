@@ -6,8 +6,8 @@ import jest.modele.jeu.Offre;
 import java.util.Comparator;
 import java.util.List;
 /**
- * Stratégie gloutonne : privilégie toujours les cartes de plus haute 
- * valeur
+ * Stratégie gloutonne : l'ia privilégie les gain immédiats (carte de plus haute valeur faciale disponible).
+ * Utilisation simple et peu efficace
  */
 public class StrategieGloutonne implements StrategieJeu{
 	
@@ -18,9 +18,13 @@ public class StrategieGloutonne implements StrategieJeu{
 	
     @Override
     public Carte choisirCarteOffre(List<Carte> main, Jest jest) {
-        return main.stream()
-                .min(Comparator.comparingInt(Carte::getValeurFaciale))
-                .orElse(main.get(0));
+        Carte carteMax = main.get(0);
+        for (Carte carte : main) {
+            if (carte.getValeurFaciale() > carteMax.getValeurFaciale()) {
+                carteMax = carte;
+            }
+        }
+        return carteMax;
     }
     
     
@@ -28,7 +32,7 @@ public class StrategieGloutonne implements StrategieJeu{
     public Offre choisirOffreCible(List<Offre> offres, Jest jest) {
         Offre offreMax = offres.get(0);
         for (Offre offre : offres) {
-            if (offre.getCarteVisible().getValeurFaciale() > offreMax.getCarteVisible().getValeurFaciale()) {
+            if (offre.getCartePlusFortVisible().getValeurFaciale() > offreMax.getCartePlusFortVisible().getValeurFaciale()) {
                 offreMax = offre;
             }
         }
@@ -37,7 +41,7 @@ public class StrategieGloutonne implements StrategieJeu{
     
     @Override
     public Carte choisirCarteDansOffre(Offre offre, Jest jest) {
-        return offre.getCarteVisible();
+        return offre.getCartePlusFortVisible();
     }
 }
 

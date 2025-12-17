@@ -25,6 +25,7 @@ public class Partie implements Serializable {
     private boolean extensionActive;
     private CalculateurScore calculateur;
     private Extension extension;
+    private Variante variante;
 
     /**
      * Constructeur de Partie.
@@ -36,6 +37,7 @@ public class Partie implements Serializable {
         this.tourActuel = 0;
         this.calculateur = new CalculateurScore();
         this.extension = null;
+        this.variante = null;
     }
 
     /**
@@ -43,21 +45,23 @@ public class Partie implements Serializable {
      * 
      * @param joueurs   Liste des joueurs (3 ou 4)
      * @param extension Extension choisie (null si aucune)
+     * @param variante Variante choisie (standard par défaut)
      */
-    public void initialiser(List<Joueur> joueurs, Extension extension) {
+    public void initialiser(List<Joueur> joueurs, Extension extension, Variante variante) {
         if (joueurs.size() < 3 || joueurs.size() > 4) {
             throw new IllegalArgumentException("Le jeu nécessite 3 ou 4 joueurs");
         }
 
         this.joueurs = new ArrayList<>(joueurs);
         this.extension = extension;
+        this.variante = variante;
 
         // Initialiser et mélanger le paquet
         paquet.initialiser(extension);
         paquet.melanger();
 
         // Placer les trophées
-        int nbTrophees = joueurs.size() == 3 ? 2 : 1;
+        int nbTrophees = this.variante.nombreTrophees(joueurs.size());
         List<Carte> cartesTrophees = paquet.distribuer(nbTrophees);
         
         for (Carte carte : cartesTrophees) {
@@ -121,9 +125,9 @@ public class Partie implements Serializable {
         if (tourActuel > 1 && cartesResiduelles != null) {
             tour.setCartesResiduelles(cartesResiduelles);
         }
-
+        int nbCartes = variante.modifierDistribution(tour, tourActuel);
         // Phase 1 : Distribution
-        Map<Joueur, List<Carte>> mains = tour.distribuerCartes();
+        Map<Joueur, List<Carte>> mains = tour.distribuerCartes(nbCartes);
 
         // Phase 2 : Création des offres
         tour.creerOffres(mains);
@@ -145,7 +149,7 @@ public class Partie implements Serializable {
      * @return true si fin de partie
      */
     private boolean verifierFinPartie() {
-        return pioche.estVide();
+        return variante.verifierFinPartie(pioche.estVide(), tourActuel);
     }
 
     /**

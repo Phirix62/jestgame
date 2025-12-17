@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Représente une offre de 2 cartes (1 visible, 1 cachée) faite par un joueur.
+ * Représente une offre de x cartes (x-1 visible, 1 cachée) faite par un joueur.
  * Une offre est créée à chaque tour et peut perdre des cartes quand les autres joueurs piochent.
  */
 public class Offre implements Serializable{
     private static final long serialVersionUID = 1L;
-    private Carte carteVisible;
+    private List<Carte> cartesVisibles;
     private Carte carteCachee;
     private Joueur proprietaire;
     
@@ -23,7 +23,7 @@ public class Offre implements Serializable{
      */
     public Offre(Joueur proprietaire) {
         this.proprietaire = proprietaire;
-        this.carteVisible = null;
+        this.cartesVisibles = new ArrayList<>();
         this.carteCachee = null;
     }
     
@@ -34,11 +34,8 @@ public class Offre implements Serializable{
      */
     public void ajouterCarte(Carte carte, boolean visible) {
         if (visible) {
-            if (carteVisible != null) {
-                throw new IllegalStateException("Une carte visible existe déjà");
-            }
             carte.reveler();
-            this.carteVisible = carte;
+            this.cartesVisibles.add(carte);
         } else {
             if (carteCachee != null) {
                 throw new IllegalStateException("Une carte cachée existe déjà");
@@ -55,10 +52,8 @@ public class Offre implements Serializable{
      * @throws IllegalArgumentException Si la carte n'est pas dans l'offre
      */
     public Carte retirerCarte(Carte carte) {
-        if (carte == carteVisible) {
-            Carte temp = carteVisible;
-            carteVisible = null;
-            return temp;
+        if (cartesVisibles.remove(carte)) {
+            return carte;
         } else if (carte == carteCachee) {
             Carte temp = carteCachee;
             carteCachee = null;
@@ -68,11 +63,39 @@ public class Offre implements Serializable{
     }
     
     /**
-     * Retourne la carte visible de l'offre.
+     * Retourne la première carte visible de l'offre.
      * @return Carte visible ou null
      */
     public Carte getCarteVisible() {
-        return carteVisible;
+        return cartesVisibles.isEmpty() ? null : cartesVisibles.get(0);
+    }
+
+    /**
+     * Retourne toutes les cartes visibles.
+     * @return Liste des cartes visibles
+     */
+    public List<Carte> getCartesVisibles() {
+        return new ArrayList<>(cartesVisibles);
+    }
+
+    public int getNombreCartesVisibles() {
+        return cartesVisibles.size();
+    }
+
+    /**
+     * Retourne la carte visible la plus forte (pour déterminer ordre de jeu).
+     * @return Carte la plus forte
+     */
+    public Carte getCartePlusFortVisible() {
+        if (cartesVisibles.isEmpty()) return null;
+        
+        Carte plusForte = cartesVisibles.get(0);
+        for (Carte c : cartesVisibles) {
+            if (c.comparerForce(plusForte) > 0) {
+                plusForte = c;
+            }
+        }
+        return plusForte;
     }
     
     /**
@@ -84,11 +107,11 @@ public class Offre implements Serializable{
     }
     
     /**
-     * Vérifie si l'offre est complète (2 cartes).
-     * @return true si 2 cartes présentes
+     * Vérifie si l'offre est complète (au moins 2 cartes).
+     * @return true si au moins 2 cartes présentes
      */
     public boolean estComplete() {
-        return carteVisible != null && carteCachee != null;
+        return getNombreCartesRestantes() >= 2;
     }
     
     /**
@@ -101,30 +124,40 @@ public class Offre implements Serializable{
     
     /**
      * Retourne les cartes restantes dans l'offre.
-     * @return Liste des cartes (0, 1 ou 2 cartes)
+     * @return Liste des cartes
      */
     public List<Carte> getCartesRestantes() {
-        List<Carte> cartes = new ArrayList<>();
-        if (carteVisible != null) cartes.add(carteVisible);
+        List<Carte> cartes = new ArrayList<>(cartesVisibles);
         if (carteCachee != null) cartes.add(carteCachee);
         return cartes;
     }
     
     /**
      * Retourne le nombre de cartes restantes.
-     * @return 0, 1 ou 2
+     * @return Nombre de cartes
      */
     public int getNombreCartesRestantes() {
-        int count = 0;
-        if (carteVisible != null) count++;
+        int count = cartesVisibles.size();
         if (carteCachee != null) count++;
         return count;
     }
     
     @Override
     public String toString() {
-        return "Offre de " + proprietaire.getNom() + 
-               " [Visible: " + (carteVisible != null ? carteVisible.toStringCourt() : "X") +
-               ", Cachée: " + (carteCachee != null ? "?" : "X") + "]";
+        StringBuilder sb = new StringBuilder();
+        sb.append("Offre de ").append(proprietaire.getNom()).append(" [");
+        
+        if (!cartesVisibles.isEmpty()) {
+            sb.append("Visibles: ");
+            for (int i = 0; i < cartesVisibles.size(); i++) {
+                sb.append(cartesVisibles.get(i).toStringCourt());
+                if (i < cartesVisibles.size() - 1) sb.append(", ");
+            }
+        }
+        
+        sb.append(", Cachée: ").append(carteCachee != null ? "?" : "X");
+        sb.append("]");
+        
+        return sb.toString();
     }
 }
