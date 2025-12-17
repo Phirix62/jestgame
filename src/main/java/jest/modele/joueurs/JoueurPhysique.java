@@ -33,12 +33,12 @@ public class JoueurPhysique extends Joueur {
     @Override
     public Carte choisirCarteOffre(List<Carte> main) {
         System.out.println("\n=== " + nom + ", créez votre offre ===");
-        System.out.println("Vos 2 cartes :");
+        System.out.println("Vos " + main.size() + " cartes :");
         for (int i = 0; i < main.size(); i++) {
             System.out.println((i + 1) + ". " + main.get(i));
         }
         
-        System.out.print("Choisissez la carte à jouer FACE CACHÉE (1-2) : ");
+        System.out.print("Choisissez la carte à jouer FACE CACHÉE (1-" + main.size() + ") : ");
         int choix = lireChoix(1, main.size());
         
         return main.get(choix - 1);
@@ -50,9 +50,11 @@ public class JoueurPhysique extends Joueur {
         System.out.println("Offres disponibles :");
         for (int i = 0; i < offres.size(); i++) {
             Offre o = offres.get(i);
-            System.out.println((i + 1) + ". Offre de " + o.getProprietaire().getNom() + 
-                             " - Carte visible: " + o.getCarteVisible().toStringCourt() +
-                             " - Carte cachée: ???");
+            System.out.println((i + 1) + ". Offre de " + o.getProprietaire().getNom());
+            for (int j = 0; j < o.getNombreCartesVisibles(); j++) {
+            System.out.println(" - Carte visible: " + o.getCartesVisibles().get(j));
+            }
+            System.out.println(" - Carte cachée: ???");                 
         }
         
         System.out.print("Choisissez une offre (1-" + offres.size() + ") : ");
@@ -63,13 +65,16 @@ public class JoueurPhysique extends Joueur {
     
     @Override
     public Carte choisirCarteDansOffre(Offre offre) {
+        int totalCartes = offre.getNombreCartesVisibles() + 1;
         System.out.println("\n=== " + nom + ", choisissez une carte dans l'offre ===");
         System.out.println("Offre de " + offre.getProprietaire().getNom() + " :");
-        System.out.println("1. Carte visible: " + offre.getCarteVisible());
-        System.out.println("2. Carte cachée: ???");
+        for (int j = 0; j < totalCartes - 1; j++) {
+            System.out.println(" - Carte visible: " + offre.getCartesVisibles().get(j));
+            }
+        System.out.println(" - Carte cachée: ???");
         
-        System.out.print("Choisissez une carte (1-2) : ");
-        int choix = lireChoix(1, 2);
+        System.out.print("Choisissez une carte (1-" + totalCartes + ") : ");
+        int choix = lireChoix(1, totalCartes);
         
         return choix == 1 ? offre.getCarteVisible() : offre.getCarteCachee();
     }

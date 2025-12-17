@@ -25,6 +25,7 @@ public class Partie implements Serializable {
     private boolean extensionActive;
     private CalculateurScore calculateur;
     private Extension extension;
+    private Variante variante;
 
     /**
      * Constructeur de Partie.
@@ -36,6 +37,7 @@ public class Partie implements Serializable {
         this.tourActuel = 0;
         this.calculateur = new CalculateurScore();
         this.extension = null;
+        this.variante = null;
     }
 
     /**
@@ -43,21 +45,23 @@ public class Partie implements Serializable {
      * 
      * @param joueurs   Liste des joueurs (3 ou 4)
      * @param extension Extension choisie (null si aucune)
+     * @param variante Variante choisie (standard par défaut)
      */
-    public void initialiser(List<Joueur> joueurs, Extension extension) {
+    public void initialiser(List<Joueur> joueurs, Extension extension, Variante variante) {
         if (joueurs.size() < 3 || joueurs.size() > 4) {
             throw new IllegalArgumentException("Le jeu nécessite 3 ou 4 joueurs");
         }
 
         this.joueurs = new ArrayList<>(joueurs);
         this.extension = extension;
+        this.variante = variante;
 
         // Initialiser et mélanger le paquet
         paquet.initialiser(extension);
         paquet.melanger();
 
         // Placer les trophées
-        int nbTrophees = joueurs.size() == 3 ? 2 : 1;
+        int nbTrophees = this.variante.nombreTrophees(joueurs.size());
         List<Carte> cartesTrophees = paquet.distribuer(nbTrophees);
         
         for (Carte carte : cartesTrophees) {
@@ -101,7 +105,6 @@ public class Partie implements Serializable {
             System.out.println("\n═══════════════════════════════════");
             System.out.println("         TOUR " + tourActuel);
             System.out.println("═══════════════════════════════════\n");
-
             boolean succes = executerTour();
             tourActuel++;
             return succes;
@@ -121,9 +124,9 @@ public class Partie implements Serializable {
         if (tourActuel > 1 && cartesResiduelles != null) {
             tour.setCartesResiduelles(cartesResiduelles);
         }
-
+        int nbCartes = variante.modifierDistribution(tour, pioche.getTaille(), joueurs.size());
         // Phase 1 : Distribution
-        Map<Joueur, List<Carte>> mains = tour.distribuerCartes();
+        Map<Joueur, List<Carte>> mains = tour.distribuerCartes(nbCartes);
 
         // Phase 2 : Création des offres
         tour.creerOffres(mains);
@@ -145,7 +148,16 @@ public class Partie implements Serializable {
      * @return true si fin de partie
      */
     private boolean verifierFinPartie() {
-        return pioche.estVide();
+        boolean cartesInsuffisantes = false;
+        int nbJoueurs = joueurs.size();
+        int cartesMinimales = nbJoueurs * 2;
+        if(tourActuel <= 1) {
+            cartesInsuffisantes = false;
+        }
+        else if ((cartesResiduelles.size() + pioche.getTaille()) < cartesMinimales) {
+            cartesInsuffisantes = true;
+        }
+        return variante.verifierFinPartie(cartesInsuffisantes, tourActuel);
     }
 
     /**
@@ -193,13 +205,16 @@ public class Partie implements Serializable {
             joueur.getJest().revelerCartes();
             System.out.println(joueur.getNom() + " : " + joueur.getJest().afficherDetails());
         }
-
+        
+        System.out.println("\n--- Calcul des scores ---");
         // Calculer les scores de base (sans trophées)
         for (Joueur joueur : joueurs) {
             int score = calculateur.calculerScore(joueur.getJest(), true);
             joueur.setScore(score);
+            System.out.println(joueur.getNom() + " : " + score + " points");
+            System.out.println(calculateur.afficherDetailScore(joueur.getJest()));
         }
-        // TODO afficher scores sans trophées pour lisibilité
+
         attribuerTrophees();
 
         // Recalculer les scores finaux (avec trophées)
@@ -233,7 +248,7 @@ public class Partie implements Serializable {
      * Calcule les scores finaux de tous les joueurs (avec trophées).
      */
     private void calculerScoresFinal() {
-        System.out.println("\n--- Calcul des scores finaux ---");
+        System.out.println("\n--- Calcul des scores finaux avec trophées ---");
         for (Joueur joueur : joueurs) {
             int scoreFinal = calculateur.calculerScore(joueur.getJest(), false);
             joueur.setScore(scoreFinal);
@@ -374,6 +389,15 @@ public class Partie implements Serializable {
     }
 
     /**
+     * Retourne la variante utilisée.
+     * 
+     * @return Variante
+     */
+    public Variante getVariante() {
+        return variante;
+    }
+
+    /**
      * Indique si l'extension est active.
      * 
      * @return true si extension active
@@ -425,11 +449,13 @@ public class Partie implements Serializable {
             List<Trophee> tropheesEnJeu,
             int tourActuel,
             Extension extension,
+            Variante variante,
             List<Carte> cartesResiduelles) {
 
         this.joueurs = joueurs;
         this.tourActuel = tourActuel;
         this.extension = extension;
+        this.variante = variante;
         this.tropheesEnJeu = new ArrayList<>(tropheesEnJeu);
         this.cartesResiduelles = cartesResiduelles != null ? new ArrayList<>(cartesResiduelles) : new ArrayList<>();
 

@@ -45,30 +45,35 @@ public class Tour {
      * Tours suivants : Récupérer résiduelles + compléter avec pioche + mélanger
      * @return Map associant chaque joueur à ses 2 cartes
      */
-    public Map<Joueur, List<Carte>> distribuerCartes() {
+    public Map<Joueur, List<Carte>> distribuerCartes(int nbCartes) {
         Map<Joueur, List<Carte>> mains = new HashMap<>();
         List<Carte> cartesADistribuer = new ArrayList<>();
         
         if (numero == 1) {
-            // Premier tour : piocher 2 cartes par joueur
-            int nbCartes = joueurs.size() * 2;
-            cartesADistribuer = pioche.piocher(nbCartes);
+            // Premier tour : piocher x cartes par joueur selon variante
+            int totalCartes = joueurs.size() * nbCartes;
+            cartesADistribuer = pioche.piocher(totalCartes);
         } else {
             // Tours suivants : récupérer résiduelles + compléter
             cartesADistribuer.addAll(cartesResiduelles);
-            int nbCartesManquantes = joueurs.size();
-            cartesADistribuer.addAll(pioche.piocher(nbCartesManquantes));
+            int nbCartesManquantes = joueurs.size() * nbCartes - cartesResiduelles.size();
+            try {
+                cartesADistribuer.addAll(pioche.piocher(nbCartesManquantes));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalStateException("Pas assez de cartes restantes pour une distribution complète");
+            }
             
             // Mélanger
             Collections.shuffle(cartesADistribuer);
         }
         
-        // Distribuer 2 cartes à chaque joueur
+        // Distribuer les cartes à chaque joueur
         int index = 0;
         for (Joueur joueur : joueurs) {
             List<Carte> main = new ArrayList<>();
-            main.add(cartesADistribuer.get(index++));
-            main.add(cartesADistribuer.get(index++));
+            for (int i = 0; i < nbCartes; i++) {
+                main.add(cartesADistribuer.get(index++));
+            }
             mains.put(joueur, main);
         }
         
@@ -77,7 +82,7 @@ public class Tour {
     
     /**
      * PHASE 2 : Crée les offres de tous les joueurs.
-     * Chaque joueur choisit 1 carte face cachée, l'autre devient visible.
+     * Chaque joueur choisit 1 carte face cachée, les autres deviennent visibles.
      * @param mains Map des mains distribuées
      */
     public void creerOffres(Map<Joueur, List<Carte>> mains) {
@@ -86,11 +91,18 @@ public class Tour {
             
             // Le joueur choisit quelle carte mettre face cachée
             Carte carteCachee = joueur.choisirCarteOffre(main);
-            Carte carteVisible = main.get(0) == carteCachee ? main.get(1) : main.get(0);
             
             // Créer l'offre
             Offre offre = new Offre(joueur);
-            offre.ajouterCarte(carteVisible, true);
+
+            // Ajouter toutes les autres cartes comme visibles
+            for (Carte carte : main) {
+                if (carte != carteCachee) {
+                    offre.ajouterCarte(carte, true);
+                }
+            }
+
+            // Ajouter la carte cachée
             offre.ajouterCarte(carteCachee, false);
             
             offres.put(joueur, offre);
@@ -111,7 +123,7 @@ public class Tour {
         Carte carteMax = null;
         
         for (Map.Entry<Joueur, Offre> entry : offres.entrySet()) {
-            Carte carteVisible = entry.getValue().getCarteVisible();
+            Carte carteVisible = entry.getValue().getCartePlusFortVisible();
             if (carteMax == null || carteVisible.comparerForce(carteMax) > 0) {
                 carteMax = carteVisible;
                 premier = entry.getKey();
@@ -206,8 +218,8 @@ public class Tour {
         for (Joueur j : joueurs) {
             if (!joueursAyantJoue.contains(j)) {
                 Offre offre = offres.get(j);
-                if (offre != null && offre.getCarteVisible() != null) {
-                    Carte carteVisible = offre.getCarteVisible();
+                if (offre != null && offre.getCartePlusFortVisible() != null) {
+                    Carte carteVisible = offre.getCartePlusFortVisible();
                     if (carteMax == null || carteVisible.comparerForce(carteMax) > 0) {
                         carteMax = carteVisible;
                         suivant = j;

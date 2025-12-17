@@ -116,9 +116,10 @@ public class Main {
         int nbJoueurs = choisirNombreJoueurs();
         List<Joueur> joueurs = creerJoueurs(nbJoueurs);
         Extension extension = choisirExtensions(joueurs.size());
+        Variante variante = choisirVariante();
 
         Partie partie = new Partie();
-        partie.initialiser(joueurs, extension);
+        partie.initialiser(joueurs, extension, variante);
 
         System.out.println("\nPartie initialisée avec succès !\n");
         return partie;
@@ -178,10 +179,10 @@ public class Main {
 
         try {
             partie.sauvegarder(nom);
-            System.out.println("✓ Partie sauvegardée avec succès !");
+            System.out.println(" Partie sauvegardée avec succès !");
             return true;
         } catch (Exception e) {
-            System.out.println("✗ Erreur lors de la sauvegarde : " + e.getMessage());
+            System.out.println(" Erreur lors de la sauvegarde : " + e.getMessage());
             return false;
         }
     }
@@ -231,8 +232,8 @@ public class Main {
             System.out.println("  Type :");
             System.out.println("    1. Humain");
             System.out.println("    2. IA Aléatoire");
-            System.out.println("    3. IA Gloutonne (à implémenter)");
-            System.out.println("    4. IA Défensive (à implémenter)");
+            System.out.println("    3. IA Gloutonne");
+            System.out.println("    4. IA Défensive");
             System.out.print("  Choix (1-4) : ");
 
             int choix = lireChoix(1, 4);
@@ -246,14 +247,10 @@ public class Main {
                     joueur = new JoueurVirtuel(nom, new StrategieAleatoire());
                     break;
                 case 3:
-                    // TODO: Implémenter StrategieGloutonne
-                    System.out.println("  [IA Gloutonne non implémentée, utilisation IA Aléatoire]");
-                    joueur = new JoueurVirtuel(nom, new StrategieAleatoire());
+                    joueur = new JoueurVirtuel(nom, new StrategieGloutonne());
                     break;
                 case 4:
-                    // TODO: Implémenter StrategieDefensive
-                    System.out.println("  [IA Défensive non implémentée, utilisation IA Aléatoire]");
-                    joueur = new JoueurVirtuel(nom, new StrategieAleatoire());
+                    joueur = new JoueurVirtuel(nom, new StrategieDefensive());
                     break;
                 default:
                     joueur = new JoueurPhysique(nom);
@@ -267,7 +264,7 @@ public class Main {
     }
 
     /**
-     * Demande si les extensions doivent être activées.
+     * Choisir l'extension à utiliser pour la partie
      * 
      * @return true si extensions activées
      */
@@ -284,6 +281,30 @@ public class Main {
             return extension;
         }
         return null;
+    }
+
+    /**
+     * Choisir la variante de règles à utiliser pour la partie
+     * 
+     * @return Variante choisie
+     */
+    private static Variante choisirVariante() {
+        System.out.println("Choisir une variante de règles : ");
+        System.out.println("    1. Standard");
+        System.out.println("    2. Tactique");
+        System.out.println("    3. Partie Rapide");
+        System.out.print("  Choix (1-3) : ");
+
+        int choix = lireChoix(1, 3);
+        switch (choix) {
+            case 2:
+                return new VarianteTactique();
+            case 3:
+                return new VarianteRapide();
+            case 1:
+            default:
+                return new VarianteStandard();
+        }
     }
 
     /**
