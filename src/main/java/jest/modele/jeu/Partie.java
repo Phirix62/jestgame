@@ -197,13 +197,16 @@ public class Partie implements Serializable {
             joueur.getJest().revelerCartes();
             System.out.println(joueur.getNom() + " : " + joueur.getJest().afficherDetails());
         }
-
+        
+        System.out.println("\n--- Calcul des scores ---");
         // Calculer les scores de base (sans trophées)
         for (Joueur joueur : joueurs) {
             int score = calculateur.calculerScore(joueur.getJest(), true);
             joueur.setScore(score);
+            System.out.println(joueur.getNom() + " : " + score + " points");
+            System.out.println(calculateur.afficherDetailScore(joueur.getJest()));
         }
-        // TODO afficher scores sans trophées pour lisibilité
+
         attribuerTrophees();
 
         // Recalculer les scores finaux (avec trophées)
@@ -237,7 +240,7 @@ public class Partie implements Serializable {
      * Calcule les scores finaux de tous les joueurs (avec trophées).
      */
     private void calculerScoresFinal() {
-        System.out.println("\n--- Calcul des scores finaux ---");
+        System.out.println("\n--- Calcul des scores finaux avec trophées ---");
         for (Joueur joueur : joueurs) {
             int scoreFinal = calculateur.calculerScore(joueur.getJest(), false);
             joueur.setScore(scoreFinal);
