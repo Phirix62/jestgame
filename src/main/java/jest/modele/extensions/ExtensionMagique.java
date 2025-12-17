@@ -48,6 +48,11 @@ public class ExtensionMagique extends Extension {
       }
 
       @Override
+      public boolean estCarteMagique() {
+         return true;
+      }
+
+      @Override
       public void accepter(VisiteurScore visiteur, Jest contexte) {
          visiteur.visiterCarteExtension(this, contexte);
       }
@@ -85,6 +90,11 @@ public class ExtensionMagique extends Extension {
       }
 
       @Override
+      public boolean estCarteMagique() {
+         return true;
+      }
+
+      @Override
       public void accepter(VisiteurScore visiteur, Jest contexte) {
          visiteur.visiterCarteExtension(this, contexte);
       }
@@ -118,6 +128,11 @@ public class ExtensionMagique extends Extension {
       }
 
       @Override
+      public boolean estCarteMagique() {
+         return true;
+      }
+
+      @Override
       public void accepter(VisiteurScore visiteur, Jest contexte) {
          visiteur.visiterCarteExtension(this, contexte);
       }
@@ -147,6 +162,11 @@ public class ExtensionMagique extends Extension {
       @Override
       public int getValeurEffective(Jest jest) {
          return valeurAleatoire;
+      }
+
+      @Override
+      public boolean estCarteMagique() {
+         return true;
       }
 
       @Override

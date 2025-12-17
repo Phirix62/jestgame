@@ -73,6 +73,10 @@ public abstract class Carte implements Serializable {
         return false; // Redéfini dans Joker
     }
 
+    public boolean estCarteMagique() {
+        return false; // Redéfini dans ExtensionMagique
+    }
+
     /**
      * Vérifie si la carte est visible.
      * 
@@ -140,7 +144,8 @@ public abstract class Carte implements Serializable {
         String valeur;
         if (this.estAs()) {
             valeur = "A";
-        } else {
+        } 
+        else {
             valeur = String.valueOf(valeurFaciale);
         }
         return valeur + couleur.getSymbole();

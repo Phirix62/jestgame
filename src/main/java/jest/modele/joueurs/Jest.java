@@ -191,10 +191,16 @@ public class Jest implements Serializable{
      * @param visiteur Visiteur de score
      * @return Score calculé
      */
-    public int accepterVisiteur(VisiteurScore visiteur) {
+    public int accepterVisiteur(VisiteurScore visiteur, boolean sansTrophees) {
         visiteur.reset();
         for (Carte carte : cartes) {
             carte.accepter(visiteur, this);
+        }
+        if (!sansTrophees) {
+            for (Trophee trophee : trophees) {
+                trophee.accepter(visiteur, this);
+            }
+            
         }
         return visiteur.getScorePartiel();
     }
@@ -217,10 +223,11 @@ public class Jest implements Serializable{
         sb.append(cartes.stream()
                 .map(Carte::toString)
                 .collect(Collectors.joining(", ")));
-        sb.append(" | Trophées: ");
-        sb.append(trophees.stream()
-                .map(Trophee::toString)
-                .collect(Collectors.joining(", ")));
+        // TODO revoir affichage trophées
+        //sb.append(" | Trophées: ");
+        //sb.append(trophees.stream()
+        //       .map(Trophee::toString)
+        //       .collect(Collectors.joining(", ")));
         return sb.toString();
     }
 

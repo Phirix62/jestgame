@@ -1,6 +1,5 @@
 package jest.modele.score;
 
-import jest.modele.cartes.Trophee;
 import jest.modele.joueurs.Jest;
 
 import java.io.Serializable;
@@ -53,7 +52,7 @@ public class CalculateurScore implements Serializable {
         
         // Faire visiter le Jest par tous les visiteurs
         for (VisiteurScore visiteur : visiteurs) {
-            jest.accepterVisiteur(visiteur);
+            jest.accepterVisiteur(visiteur, sansTrophees);
         }
         
         // Agréger les scores partiels
@@ -61,27 +60,7 @@ public class CalculateurScore implements Serializable {
         for (VisiteurScore visiteur : visiteurs) {
             scoreBase += visiteur.getScorePartiel();
         }
-        
-        // Appliquer les effets des trophées si demandé
-        if (!sansTrophees) {
-            scoreBase = appliquerEffetsTrophees(jest, scoreBase);
-        }
-        
         return scoreBase;
-    }
-    
-    /**
-     * Applique les effets des trophées au score.
-     * @param jest Jest contenant les trophées
-     * @param scoreBase Score de base sans trophées
-     * @return Score final avec trophées
-     */
-    private int appliquerEffetsTrophees(Jest jest, int scoreBase) {
-        int scoreFinal = scoreBase;
-        for (Trophee trophee : jest.getTrophees()) {
-            scoreFinal += trophee.getEffetScore();
-        }
-        return scoreFinal;
     }
     
     /**
@@ -96,7 +75,7 @@ public class CalculateurScore implements Serializable {
         // Réinitialiser et visiter
         for (VisiteurScore visiteur : visiteurs) {
             visiteur.reset();
-            jest.accepterVisiteur(visiteur);
+            jest.accepterVisiteur(visiteur, false);
         }
         
         // Afficher chaque composante
@@ -111,18 +90,7 @@ public class CalculateurScore implements Serializable {
         for (VisiteurScore v : visiteurs) {
             scoreBase += v.getScorePartiel();
         }
-        sb.append("  Score base:    ").append(scoreBase).append("\n");
-        
-        if (!jest.getTrophees().isEmpty()) {
-            int bonusTrophees = 0;
-            for (Trophee t : jest.getTrophees()) {
-                bonusTrophees += t.getEffetScore();
-            }
-            sb.append("  Bonus trophées: ").append(bonusTrophees).append("\n");
-            sb.append("  SCORE FINAL:   ").append(scoreBase + bonusTrophees).append("\n");
-        } else {
-            sb.append("  SCORE FINAL:   ").append(scoreBase).append("\n");
-        }
+        sb.append("  Score :    ").append(scoreBase).append("\n");
         
         return sb.toString();
     }

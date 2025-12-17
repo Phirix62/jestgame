@@ -2,7 +2,7 @@ package jest.modele.joueurs;
 
 import jest.modele.cartes.Carte;
 import jest.modele.jeu.Offre;
-import java.util.List;
+import java.util.*;
 import java.util.Random;
 
 /**
@@ -31,6 +31,8 @@ public class StrategieAleatoire implements StrategieJeu {
     
     @Override
     public Carte choisirCarteDansOffre(Offre offre, Jest jest) {
-        return random.nextBoolean() ? offre.getCarteVisible() : offre.getCarteCachee();
+        List<Carte> cartesDisponibles = new ArrayList<>(offre.getCartesVisibles());
+        cartesDisponibles.add(offre.getCarteCachee());
+        return cartesDisponibles.get(random.nextInt(cartesDisponibles.size()));
     }
 }
