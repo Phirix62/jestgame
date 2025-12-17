@@ -11,6 +11,10 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: write        # Permission d'écrire dans le repo (créer release)
+  packages: write        
+
 jobs:
   release:
     name: Create Release
