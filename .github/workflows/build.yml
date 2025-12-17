@@ -4,7 +4,7 @@ name: Build and Test
 # Quand ce workflow s'exécute
 on:
   push:
-    branches: [ main ]  # Sur push vers main
+    branches: [ main, dev ]  # Sur push vers main ou dev
   pull_request:
     branches: [ main ]           # Sur PR vers main
   workflow_dispatch:             # Permet lancement manuel
