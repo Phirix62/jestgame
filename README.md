@@ -9,7 +9,7 @@ Jest est un jeu de cartes compétitif où les joueurs doivent constituer la meil
 ### Caractéristiques
 
 - 🎮 **3 ou 4 joueurs** (humains ou IA)
-- 🤖 **Stratégies IA variées** (aléatoire, offensive, défensive, etc.)
+- 🤖 **Stratégies IA variées** (aléatoire, gloutonnee, défensive, etc.)
 - 🎴 **Extensions** avec cartes spéciales (Cartes Magiques)
 - ⚙️ **Variantes de règles** (Standard, Tactique, Rapide)
 - 💾 **Système de sauvegarde/chargement**
@@ -31,7 +31,7 @@ Jest est un jeu de cartes compétitif où les joueurs doivent constituer la meil
 ### Cloner le projet
 
 ```bash
-git clone https://github.com/votre-username/jest-game.git
+git clone https://github.com/Phirix62/jestgame.git
 cd jest-game
 ```
 
@@ -177,33 +177,25 @@ Collecter les cartes qui rapportent le plus de points en fin de partie pour remp
 1. **Distribution** : Chaque joueur reçoit 2 cartes (ou plus selon variante)
 2. **Création d'offres** : Les joueurs créent une offre (1 carte cachée, les autres visibles)
 3. **Prises de cartes** : À tour de rôle, chaque joueur prend une carte dans l'offre d'un adversaire
-4. **Fin de partie** : Quand il n'y a plus assez de cartes pour distribuer
+4. **Fin de partie** : Quand il n'y a plus assez de cartes pour distribuer (pioche vide)
 
 ### Scoring
 
-- **Piques ♠️** : Augmentent la valeur du Jest
-- **Trèfles ♣️** : Augmentent la valeur du Jest
-- **Carreaux ♦️** : Diminuent la valeur du Jest
-- **Cœurs ♥️** : Diminuent la valeur du Jest
-- **Joker 🃏** : Bonus de 4 points
-- **As** : 5 points (ou 1 si isolé)
+- Voir règles officielles
 
 ### Trophées
 
-- **Highest** : Plus haute valeur faciale
-- **Lowest** : Plus basse valeur faciale
+- **Highest** : Plus haute valeur faciale d'une couleur
+- **Lowest** : Plus basse valeur faciale d'une couleur
 - **Majority** : Plus de cartes d'une même valeur
-- **Best Jest** : Meilleur Jest (selon les couleurs)
+- **Best Jest** : Meilleur Jest
 - **Joker** : Détient le Joker
 
 ## 🤖 Stratégies IA disponibles
 
 - **Aléatoire** : Choix au hasard
-- **Valeur Haute** : Privilégie les cartes fortes
-- **Éviter Joker** : Évite Jokers et Cœurs
-- **Pique-Trèfle** : Maximise Piques et Trèfles
-- **Majorité** : Vise le trophée "Majorité"
-- **Best Jest** : Optimise pour le meilleur Jest
+- **Gloutonne** : Privilégie les cartes à haute valeur faciale
+- **Défensive** : Evite les carreaux et ne prend pas de risques
 
 ## 🎴 Extensions
 
@@ -224,8 +216,7 @@ Règles classiques du jeu (2 cartes par main)
 - Plus de choix stratégiques
 
 ### Rapide
-- 3 cartes par main
-- Partie limitée à 6 tours
+- Partie limitée à 3 tours
 
 ## 💾 Système de sauvegarde
 
@@ -239,88 +230,21 @@ sauvegardes/
 └── ...
 ```
 
-## 🐛 Dépannage
+## 🏗️ Status
 
-### Le jeu ne se lance pas
+![Build Status](https://github.com/Phirix62/jestgame/workflows/CI%20Status/badge.svg)
+![Javadoc](https://github.com/Phirix62/jestgame/workflows/Generate%20and%20Deploy%20Javadoc/badge.svg)
 
-```bash
-# Vérifier la version Java
-java -version
-
-# Recompiler complètement
-mvn clean compile
-
-# Vérifier les dépendances
-mvn dependency:tree
-```
-
-### Erreur de compilation
-
-```bash
-# Nettoyer et recompiler
-mvn clean install -U
-```
-
-### Problème de sauvegarde
-
-Vérifiez que le dossier `sauvegardes/` existe et est accessible en écriture.
-
-## 📝 Scripts utiles
-
-### Windows
-
-**Lancer le jeu** (`lancer.bat`)
-```bat
-@echo off
-mvn clean compile exec:java
-pause
-```
-
-**Build complet** (`build.bat`)
-```bat
-@echo off
-echo Build complet...
-mvn clean package javadoc:javadoc
-echo.
-echo JAR: target\jestgame-1.0-SNAPSHOT.jar
-echo Doc: docs\index.html
-pause
-```
-
-### Linux/Mac
-
-**Lancer le jeu** (`lancer.sh`)
-```bash
-#!/bin/bash
-mvn clean compile exec:java
-```
-
-**Build complet** (`build.sh`)
-```bash
-#!/bin/bash
-echo "Build complet..."
-mvn clean package javadoc:javadoc
-echo ""
-echo "JAR: target/jestgame-1.0-SNAPSHOT.jar"
-echo "Doc: docs/index.html"
-```
-
-Rendre exécutable :
-```bash
-chmod +x lancer.sh build.sh
-```
 
 ## 👥 Auteurs
 
-- **Votre Nom** - Projet LO02 - UTC
-
+- **Nathan Honoré et Ayat Atraoui** - Projet LO02 - UTT
 ## 📄 Licence
 
-Ce projet est développé dans le cadre académique du cours LO02 à l'UTC.
+Ce projet est développé dans le cadre académique du cours LO02 à l'UTT.
 
 ## 🔗 Liens utiles
 
-- [Règles officielles Jest](https://www.goodlittlegames.co.uk/jest)
 - [Documentation Java](https://docs.oracle.com/en/java/)
 - [Maven Documentation](https://maven.apache.org/guides/)
 
