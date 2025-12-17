@@ -232,8 +232,8 @@ public class Main {
             System.out.println("  Type :");
             System.out.println("    1. Humain");
             System.out.println("    2. IA Aléatoire");
-            System.out.println("    3. IA Gloutonne (à implémenter)");
-            System.out.println("    4. IA Défensive (à implémenter)");
+            System.out.println("    3. IA Gloutonne");
+            System.out.println("    4. IA Défensive");
             System.out.print("  Choix (1-4) : ");
 
             int choix = lireChoix(1, 4);
@@ -247,14 +247,10 @@ public class Main {
                     joueur = new JoueurVirtuel(nom, new StrategieAleatoire());
                     break;
                 case 3:
-                    // TODO: Implémenter StrategieGloutonne
-                    System.out.println("  [IA Gloutonne non implémentée, utilisation IA Aléatoire]");
-                    joueur = new JoueurVirtuel(nom, new StrategieAleatoire());
+                    joueur = new JoueurVirtuel(nom, new StrategieGloutonne());
                     break;
                 case 4:
-                    // TODO: Implémenter StrategieDefensive
-                    System.out.println("  [IA Défensive non implémentée, utilisation IA Aléatoire]");
-                    joueur = new JoueurVirtuel(nom, new StrategieAleatoire());
+                    joueur = new JoueurVirtuel(nom, new StrategieDefensive());
                     break;
                 default:
                     joueur = new JoueurPhysique(nom);

@@ -7,8 +7,7 @@ import jest.modele.jeu.Offre;
 import java.util.List;
 
 /**
- * Stratégie défensive : préserver son score en évitant les Carreaux à 
- * tout prix.
+ * Stratégie défensive : préserver son score en évitant les Carreaux à tout prix.
  */
 public class StrategieDefensive implements StrategieJeu {
 
@@ -27,7 +26,7 @@ public class StrategieDefensive implements StrategieJeu {
         
         Carte carteMin = main.get(0);
         for (Carte carte : main) {
-            if (carte.getValeurFaciale() < carteMin.getValeurFaciale()) {
+            if (carte.getValeurEffective(jest) < carteMin.getValeurEffective(jest)) {
                 carteMin = carte;
             }
         }
@@ -36,28 +35,31 @@ public class StrategieDefensive implements StrategieJeu {
 
     @Override
     public Offre choisirOffreCible(List<Offre> offres, Jest jest) {
+        int nbCarreaux = 0;
+        int minCarreaux = 2;
+        Offre choix = offres.get(0);
         for (Offre offre : offres) {
-            if (offre.getCarteVisible().getCouleur() != Couleur.CARREAU) {
-                return offre;
+            for (Carte carte : offre.getCartesVisibles()) {
+                if (carte.getCouleur() == Couleur.CARREAU) {
+                    nbCarreaux++;
+                }
+            }
+            if (nbCarreaux < minCarreaux) {
+                minCarreaux = nbCarreaux;
+                choix = offre;
             }
         }
-        
-        Offre offreMin = offres.get(0);
-        for (Offre offre : offres) {
-            if (offre.getCarteVisible().getValeurFaciale() < offreMin.getCarteVisible().getValeurFaciale()) {
-                offreMin = offre;
-            }
-        }
-        return offreMin;
+        return choix;
     }
 
     @Override
     public Carte choisirCarteDansOffre(Offre offre, Jest jest) {
         
-        if (offre.getCarteVisible().getCouleur() == Couleur.CARREAU) {
-            return offre.getCarteCachee();
-        } else {
-            return offre.getCarteVisible();
+        for (Carte carte : offre.getCartesVisibles()) {
+            if (carte.getCouleur() != Couleur.CARREAU) {
+                return carte;
+            }
         }
+        return offre.getCartesVisibles().get(0);
     }
 }
