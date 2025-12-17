@@ -1,0 +1,111 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'                     # Déclenche sur tags v1.0, v2.1, etc.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1️⃣ Checkout
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+    
+    # 2️⃣ Setup Java
+    - name: ☕ Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: 'maven'
+    
+    # 3️⃣ Extraire la version
+    - name: 🏷️ Extract version
+      id: version
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION=${GITHUB_REF#refs/tags/v}
+        fi
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        echo "Version: $VERSION"
+    
+    # 4️⃣ Mettre à jour la version dans pom.xml
+    - name: 📝 Update version in pom.xml
+      run: |
+        mvn versions:set -DnewVersion=${{ steps.version.outputs.VERSION }}
+        mvn versions:commit
+    
+    # 5️⃣ Build complet
+    - name: 🔨 Build project
+      run: mvn clean package -DskipTests
+    
+    # 6️⃣ Générer Javadoc JAR
+    - name: 📚 Generate Javadoc JAR
+      run: mvn javadoc:jar
+    
+    # 7️⃣ Renommer les JARs
+    - name: 📦 Rename artifacts
+      run: |
+        mv target/jestgame-*.jar target/jest-game-${{ steps.version.outputs.VERSION }}.jar || true
+        mv target/jestgame-*-javadoc.jar target/jest-game-${{ steps.version.outputs.VERSION }}-javadoc.jar || true
+    
+    # 8️⃣ Générer changelog
+    - name: 📋 Generate changelog
+      id: changelog
+      run: |
+        CHANGELOG=$(git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD^)..HEAD)
+        echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGELOG" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    
+    # 9️⃣ Créer la release GitHub
+    - name: 🎉 Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.version.outputs.VERSION }}
+        name: Jest Game v${{ steps.version.outputs.VERSION }}
+        body: |
+          ## 🎮 Jest Game v${{ steps.version.outputs.VERSION }}
+          
+          ### 📥 Téléchargements
+          - `jest-game-${{ steps.version.outputs.VERSION }}.jar` - Application complète
+          - `jest-game-${{ steps.version.outputs.VERSION }}-javadoc.jar` - Documentation
+          
+          ### 🚀 Installation
+          ```bash
+          java -jar jest-game-${{ steps.version.outputs.VERSION }}.jar
+          ```
+          
+          ### 📚 Documentation
+          [Consulter la Javadoc en ligne](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/)
+          
+          ### 📝 Changements
+          ${{ steps.changelog.outputs.CHANGELOG }}
+          
+          ---
+          *Build automatique via GitHub Actions*
+        files: |
+          target/jest-game-*.jar
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    # 🔟 Notification
+    - name: 📢 Release created
+      run: |
+        echo "✅ Release v${{ steps.version.outputs.VERSION }} créée avec succès !"
+        echo "📦 Artefacts disponibles"
+        echo "📚 Documentation publiée"

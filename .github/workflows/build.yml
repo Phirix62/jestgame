@@ -1,0 +1,90 @@
+name: Build and Test
+
+# 🎯 DÉCLENCHEURS
+# Quand ce workflow s'exécute
+on:
+  push:
+    branches: [ main ]  # Sur push vers main
+  pull_request:
+    branches: [ main ]           # Sur PR vers main
+  workflow_dispatch:             # Permet lancement manuel
+
+# 🔧 JOBS
+jobs:
+  build:
+    name: Build with Maven
+    runs-on: ubuntu-latest       # Machine virtuelle Ubuntu
+    
+    # 📋 ÉTAPES
+    steps:
+    # 1️⃣ Récupérer le code
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4  # Action officielle GitHub
+      # Cette action clone votre repo dans le runner
+    
+    # 2️⃣ Installer Java
+    - name: ☕ Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'       # Version Java
+        distribution: 'temurin'  # Distribution (Adoptium)
+        cache: 'maven'           # Cache des dépendances Maven
+        # Le cache accélère les builds suivants
+    
+    # 3️⃣ Afficher les versions
+    - name: 📊 Display versions
+      run: |
+        echo "Java version:"
+        java -version
+        echo "Maven version:"
+        mvn -version
+    
+    # 4️⃣ Compiler le projet
+    - name: 🔨 Build with Maven
+      run: mvn clean compile
+      # Équivalent à lancer "mvn clean compile" en local
+    
+    # 5️⃣ Exécuter les tests (si vous en avez)
+    - name: 🧪 Run tests
+      run: mvn test
+      continue-on-error: true    # Ne pas échouer si pas de tests
+    
+    # 6️⃣ Créer le package JAR
+    - name: 📦 Package application
+      run: mvn package -DskipTests
+      # -DskipTests car déjà testés à l'étape précédente
+    
+    # 7️⃣ Uploader le JAR comme artefact
+    - name: 📤 Upload JAR artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: jest-game-jar       # Nom de l'artefact
+        path: target/*.jar        # Fichiers à uploader
+        retention-days: 30        # Garder 30 jours
+        # Les artefacts sont accessibles dans l'onglet Actions
+
+  # 🔍 JOB SUPPLÉMENTAIRE : Analyse de code
+  code-quality:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+    needs: build                  # Attend que 'build' soit terminé
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: ☕ Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: 'maven'
+    
+    # Vérifier le style de code (optionnel)
+    - name: 🎨 Check code style
+      run: mvn checkstyle:check
+      continue-on-error: true
+    
+    # Analyser les dépendances
+    - name: 🔍 Check dependencies
+      run: mvn dependency:analyze

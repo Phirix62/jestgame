@@ -1,0 +1,51 @@
+@options
+@packages
+-encoding
+'UTF-8'
+-private
+-source
+'25'
+-sourcepath
+'H:/études/LO02/jestgame/src/main/java'
+-author
+-bottom
+'<i>Copyright &#169; 2025 - Projet LO02 - Tous droits réservés</i>'
+-charset
+'UTF-8'
+-d
+'H:/études/LO02/jestgame/docs'
+-docencoding
+'UTF-8'
+-Xdoclint:none
+-doctitle
+'<h1>Jest - Jeu de cartes stratégique</h1>'
+-header
+'<b>Jest Game v1.0-SNAPSHOT</b>'
+-use
+-version
+-windowtitle
+'Jest Game - Documentation API'
+jest.modele.cartes
+jest.modele.extensions
+jest.modele.jeu
+jest.modele.joueurs
+jest.modele
+jest.modele.score
+jest.utilitaires
+H:\études\LO02\jestgame\src\main\java = 1762615833384
+H:\études\LO02\jestgame\docs\allclasses-index.html = 1765999616811
+H:\études\LO02\jestgame\docs\allpackages-index.html = 1765999616813
+H:\études\LO02\jestgame\docs\constant-values.html = 1765999616600
+H:\études\LO02\jestgame\docs\element-list = 1765999616548
+H:\études\LO02\jestgame\docs\help-doc.html = 1765999616859
+H:\études\LO02\jestgame\docs\index-all.html = 1765999616852
+H:\études\LO02\jestgame\docs\index.html = 1765999616786
+H:\études\LO02\jestgame\docs\member-search-index.js = 1765999616821
+H:\études\LO02\jestgame\docs\module-search-index.js = 1765999616815
+H:\études\LO02\jestgame\docs\overview-summary.html = 1765999616856
+H:\études\LO02\jestgame\docs\overview-tree.html = 1765999616782
+H:\études\LO02\jestgame\docs\package-search-index.js = 1765999616816
+H:\études\LO02\jestgame\docs\search.html = 1765999616854
+H:\études\LO02\jestgame\docs\serialized-form.html = 1765999616615
+H:\études\LO02\jestgame\docs\tag-search-index.js = 1765999616823
+H:\études\LO02\jestgame\docs\type-search-index.js = 1765999616818
