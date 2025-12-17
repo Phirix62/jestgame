@@ -105,7 +105,6 @@ public class Partie implements Serializable {
             System.out.println("\n═══════════════════════════════════");
             System.out.println("         TOUR " + tourActuel);
             System.out.println("═══════════════════════════════════\n");
-
             boolean succes = executerTour();
             tourActuel++;
             return succes;
@@ -125,7 +124,7 @@ public class Partie implements Serializable {
         if (tourActuel > 1 && cartesResiduelles != null) {
             tour.setCartesResiduelles(cartesResiduelles);
         }
-        int nbCartes = variante.modifierDistribution(tour, tourActuel);
+        int nbCartes = variante.modifierDistribution(tour, pioche.getTaille(), joueurs.size());
         // Phase 1 : Distribution
         Map<Joueur, List<Carte>> mains = tour.distribuerCartes(nbCartes);
 
@@ -149,7 +148,16 @@ public class Partie implements Serializable {
      * @return true si fin de partie
      */
     private boolean verifierFinPartie() {
-        return variante.verifierFinPartie(pioche.estVide(), tourActuel);
+        boolean cartesInsuffisantes = false;
+        int nbJoueurs = joueurs.size();
+        int cartesMinimales = nbJoueurs * 2;
+        if(tourActuel <= 1) {
+            cartesInsuffisantes = false;
+        }
+        else if ((cartesResiduelles.size() + pioche.getTaille()) < cartesMinimales) {
+            cartesInsuffisantes = true;
+        }
+        return variante.verifierFinPartie(cartesInsuffisantes, tourActuel);
     }
 
     /**
@@ -381,6 +389,15 @@ public class Partie implements Serializable {
     }
 
     /**
+     * Retourne la variante utilisée.
+     * 
+     * @return Variante
+     */
+    public Variante getVariante() {
+        return variante;
+    }
+
+    /**
      * Indique si l'extension est active.
      * 
      * @return true si extension active
@@ -432,11 +449,13 @@ public class Partie implements Serializable {
             List<Trophee> tropheesEnJeu,
             int tourActuel,
             Extension extension,
+            Variante variante,
             List<Carte> cartesResiduelles) {
 
         this.joueurs = joueurs;
         this.tourActuel = tourActuel;
         this.extension = extension;
+        this.variante = variante;
         this.tropheesEnJeu = new ArrayList<>(tropheesEnJeu);
         this.cartesResiduelles = cartesResiduelles != null ? new ArrayList<>(cartesResiduelles) : new ArrayList<>();
 

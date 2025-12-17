@@ -179,10 +179,10 @@ public class Main {
 
         try {
             partie.sauvegarder(nom);
-            System.out.println("✓ Partie sauvegardée avec succès !");
+            System.out.println(" Partie sauvegardée avec succès !");
             return true;
         } catch (Exception e) {
-            System.out.println("✗ Erreur lors de la sauvegarde : " + e.getMessage());
+            System.out.println(" Erreur lors de la sauvegarde : " + e.getMessage());
             return false;
         }
     }

@@ -10,7 +10,8 @@ import jest.modele.score.CalculateurScore;
  * - Distribution de 3 cartes au lieu de 2 (choix plus stratégique)
  */
 public class VarianteTactique implements Variante {
-    
+    private static final long serialVersionUID = 1L;
+
     @Override
     public String getNom() {
         return "Tactique";
@@ -22,8 +23,12 @@ public class VarianteTactique implements Variante {
     }
     
     @Override
-    public int modifierDistribution(Tour tour, int numeroTour) {
-        return 3; // Distribuer 3 cartes au lieu de 2
+    public int modifierDistribution(Tour tour, int taillePioche, int nbJoueurs) {
+        if (tour.getCartesResiduelles().size() + taillePioche >= 3 * nbJoueurs) {
+            return 3; // Distribuer 3 cartes si possible
+        } else {
+            return 2; // Sinon on diminue
+        }
     }
     
     @Override
@@ -34,8 +39,8 @@ public class VarianteTactique implements Variante {
     }
     
     @Override
-    public boolean verifierFinPartie(boolean piocheVide, int numeroTour) {
-        return piocheVide; // Règle standard
+    public boolean verifierFinPartie(boolean cartesInsuffisantes, int numeroTour) {
+        return cartesInsuffisantes; // Règle standard
     }
     
     @Override

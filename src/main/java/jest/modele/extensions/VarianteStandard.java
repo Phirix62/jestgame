@@ -7,6 +7,7 @@ import jest.modele.score.CalculateurScore;
  * Variante standard (règles de base du jeu).
  */
 public class VarianteStandard implements Variante {
+    private static final long serialVersionUID = 1L;
     
     @Override
     public String getNom() {
@@ -19,18 +20,18 @@ public class VarianteStandard implements Variante {
     }
     
     @Override
-    public int modifierDistribution(Tour tour, int numeroTour) {
+    public int modifierDistribution(Tour tour, int taillePioche, int nbJoueurs) {
         return 2; // Distribution standard
     }
-    
+
     @Override
     public void modifierScoring(CalculateurScore calculateur) {
         // Pas de modification
     }
     
     @Override
-    public boolean verifierFinPartie(boolean piocheVide, int numeroTour) {
-        return piocheVide; // Fin quand pioche vide
+    public boolean verifierFinPartie(boolean cartesInsuffisantes, int numeroTour) {
+        return cartesInsuffisantes; // Fin quand cartes insuffisantes
     }
     
     @Override

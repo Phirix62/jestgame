@@ -57,8 +57,10 @@ public class Tour {
             // Tours suivants : récupérer résiduelles + compléter
             cartesADistribuer.addAll(cartesResiduelles);
             int nbCartesManquantes = joueurs.size() * nbCartes - cartesResiduelles.size();
-            if (nbCartesManquantes <= pioche.getTaille()) {
+            try {
                 cartesADistribuer.addAll(pioche.piocher(nbCartesManquantes));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalStateException("Pas assez de cartes restantes pour une distribution complète");
             }
             
             // Mélanger
