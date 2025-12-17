@@ -5,10 +5,9 @@ import jest.modele.jeu.Offre;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 /**
- * Stratégie gloutonne : tous les choix sont la au hasard.
- * Utilisation basique
+ * Stratégie gloutonne : privilégie toujours les cartes de plus haute 
+ * valeur
  */
 public class StrategieGloutonne implements StrategieJeu{
 	
