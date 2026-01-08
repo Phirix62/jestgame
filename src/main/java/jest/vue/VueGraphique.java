@@ -11,7 +11,6 @@ import jest.modele.jeu.Offre;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
@@ -29,6 +28,7 @@ public class VueGraphique extends JFrame implements Vue, ObservateurPartie, Gest
     private JPanel panneauJoueurs;
     private JPanel panneauOffres;
     private JPanel panneauControles;
+    private JPanel panneauTrophees;
     private JTextArea zoneLog;
     private JLabel labelTour;
     private JLabel labelStatut;
@@ -36,6 +36,7 @@ public class VueGraphique extends JFrame implements Vue, ObservateurPartie, Gest
     // Données actuelles
     private Map<Joueur, JPanel> panneauxJoueurs;
     private Map<Joueur, Offre> offresActuelles;
+    private int nombreTrophees;
 
     /**
      * Constructeur de VueGraphique.
@@ -138,9 +139,22 @@ public class VueGraphique extends JFrame implements Vue, ObservateurPartie, Gest
                 new Font("Arial", Font.BOLD, 14),
                 Color.WHITE
         ));
+        
+        // Panneau des trophées (bas)
+        panneauTrophees = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        panneauTrophees.setOpaque(false);
+        panneauTrophees.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.YELLOW, 2),
+                "Trophées à gagner",
+                TitledBorder.CENTER,
+                TitledBorder.TOP,
+                new Font("Arial", Font.BOLD, 14),
+                Color.YELLOW
+        ));
 
         panneau.add(panneauJoueurs, BorderLayout.NORTH);
         panneau.add(panneauOffres, BorderLayout.CENTER);
+        panneau.add(panneauTrophees, BorderLayout.SOUTH);
 
         return panneau;
     }
@@ -332,6 +346,8 @@ public class VueGraphique extends JFrame implements Vue, ObservateurPartie, Gest
                 ajouterLog("  - " + j.getNom());
             }
             ajouterLog("Trophées: " + nbTrophees);
+            
+            this.nombreTrophees = nbTrophees;
 
             // Créer les panneaux pour chaque joueur
             panneauJoueurs.removeAll();
@@ -342,6 +358,22 @@ public class VueGraphique extends JFrame implements Vue, ObservateurPartie, Gest
                 panneauxJoueurs.put(joueur, panneau);
                 panneauJoueurs.add(panneau);
             }
+            
+            // Afficher les trophées
+            panneauTrophees.removeAll();
+            if (controleur != null && controleur.getPartie() != null) {
+                var trophees = controleur.getPartie().getTropheesEnJeu();
+                for (var trophee : trophees) {
+                    Carte carteTrophee = trophee.getCarteAssociee();
+                    carteTrophee.reveler();
+                    JLabel labelTrophee = CarteRenderer.creerMiniCarte(carteTrophee);
+                    JLabel legendeTrophee = new JLabel(" (" + trophee.getCondition() + ")");
+                    panneauTrophees.add(labelTrophee);
+                    panneauTrophees.add(legendeTrophee);
+                }
+            }
+            panneauTrophees.revalidate();
+            panneauTrophees.repaint();
 
             panneauJoueurs.revalidate();
             panneauJoueurs.repaint();
@@ -392,36 +424,19 @@ public class VueGraphique extends JFrame implements Vue, ObservateurPartie, Gest
             ajouterLog(joueur.getNom() + " prend " + carte.toStringCourt() + 
                       " de l'offre de " + offreCible.getProprietaire().getNom());
 
-            // Ajouter la carte visuellement au Jest du joueur
-            JPanel panneauJoueur = panneauxJoueurs.get(joueur);
-            if (panneauJoueur != null) {
-                Component[] components = panneauJoueur.getComponents();
-                for (Component comp : components) {
-                    if (comp instanceof JPanel) {
-                        JPanel panel = (JPanel) comp;
-                        if (panel.getBorder() instanceof TitledBorder) {
-                            TitledBorder border = (TitledBorder) panel.getBorder();
-                            if ("Jest".equals(border.getTitle())) {
-                                panel.add(CarteRenderer.creerMiniCarte(carte));
-                                panel.revalidate();
-                                panel.repaint();
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Mettre à jour le score
+            // Recréer le panneau du joueur avec les cartes mises à jour
             JPanel ancienPanneau = panneauxJoueurs.get(joueur);
             if (ancienPanneau != null) {
                 JPanel nouveauPanneau = PanneauFactory.creerPanneauJoueur(joueur);
                 panneauxJoueurs.put(joueur, nouveauPanneau);
 
-                // Remplacer dans le panneau
+                // Remplacer le panneau dans l'interface
                 panneauJoueurs.removeAll();
                 for (Joueur j : controleur.getJoueurs()) {
-                    panneauJoueurs.add(panneauxJoueurs.get(j));
+                    JPanel panneauJ = panneauxJoueurs.get(j);
+                    if (panneauJ != null) {
+                        panneauJoueurs.add(panneauJ);
+                    }
                 }
                 panneauJoueurs.revalidate();
                 panneauJoueurs.repaint();

@@ -45,9 +45,9 @@ public class CarteRenderer {
             case COEUR:
                 return new Color(200, 0, 0);
             case CARREAU:
-                return new Color(255, 140, 0);
+                return new Color(204, 45, 18);
             case TREFLE:
-                return new Color(0, 100, 0);
+                return new Color(49, 60, 224);
             case PIQUE:
                 return new Color(0, 0, 0);
             case SPECIALE:

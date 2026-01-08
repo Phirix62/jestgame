@@ -17,6 +17,14 @@ public class Tour {
     private Set<Joueur> joueursAyantJoue;
     
     /**
+     * Interface fonctionnelle pour notifier les prises de cartes.
+     */
+    @FunctionalInterface
+    public interface NotificateurPrise {
+        void notifier(Joueur joueur, Carte carte, Offre offre);
+    }
+    
+    /**
      * Constructeur de Tour.
      * @param numero Numéro du tour (commence à 1)
      * @param joueurs Liste des joueurs
@@ -135,8 +143,9 @@ public class Tour {
     
     /**
      * PHASE 3 : Execute les prises de cartes dans l'ordre.
+     * @param notificateur Callback pour notifier chaque prise (peut être null)
      */
-    public void executerPrisesCartes() {
+    public void executerPrisesCartes(NotificateurPrise notificateur) {
         Joueur joueurActif = determinerPremierJoueur();
         System.out.println("\n--- Phase de prises ---");
         System.out.println("Premier joueur : " + joueurActif.getNom());
@@ -158,8 +167,14 @@ public class Tour {
             offreChoisie.retirerCarte(carteChoisie);
             
             // Ajouter au Jest du joueur
+            carteChoisie.reveler();
             joueurActif.ajouterCarteAuJest(carteChoisie);
             System.out.println(joueurActif.getNom() + " ajoute " + carteChoisie.toStringCourt() + " à son Jest");
+            
+            // Notifier les observateurs
+            if (notificateur != null) {
+                notificateur.notifier(joueurActif, carteChoisie, offreChoisie);
+            }
             
             // Marquer le joueur comme ayant joué
             joueursAyantJoue.add(joueurActif);

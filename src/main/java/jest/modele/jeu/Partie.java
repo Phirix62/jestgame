@@ -181,8 +181,10 @@ public class Partie implements Serializable {
         tour.creerOffres(mains);
         notifierObservateurs(obs -> obs.notifierOffresCreees(tour.getOffres()));
 
-        // Phase 3 : Prises de cartes
-        tour.executerPrisesCartes();
+        // Phase 3 : Prises de cartes avec notification
+        tour.executerPrisesCartes((joueur, carte, offre) -> {
+            notifierObservateurs(obs -> obs.notifierPriseCarte(joueur, carte, offre));
+        });
 
         // Récupérer les cartes résiduelles pour le prochain tour
         cartesResiduelles = tour.getCartesResiduelles();
