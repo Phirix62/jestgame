@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"l":"jest.modele"},{"l":"jest.modele.cartes"},{"l":"jest.modele.extensions"},{"l":"jest.modele.jeu"},{"l":"jest.modele.joueurs"},{"l":"jest.modele.score"},{"l":"jest.utilitaires"}];updateSearchResults();

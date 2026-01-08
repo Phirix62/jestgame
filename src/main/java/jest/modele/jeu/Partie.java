@@ -3,8 +3,9 @@ package jest.modele.jeu;
 import jest.modele.cartes.*;
 import jest.modele.joueurs.Joueur;
 import jest.modele.score.CalculateurScore;
-import jest.utilitaires.GestionnaireSauvegarde;
+import jest.modele.utilitaires.GestionnaireSauvegarde;
 import jest.modele.extensions.*;
+import jest.controleur.ObservateurPartie;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -14,6 +15,7 @@ import java.util.*;
  * Classe principale du moteur de jeu Jest.
  * Orchestre le déroulement complet d'une partie.
  * Pattern Façade : point d'entrée unique pour toute l'application.
+ * Pattern Observateur : notifie les vues des changements d'état.
  */
 public class Partie implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -26,6 +28,7 @@ public class Partie implements Serializable {
     private CalculateurScore calculateur;
     private Extension extension;
     private Variante variante;
+    private transient List<ObservateurPartie> observateurs;
 
     /**
      * Constructeur de Partie.
@@ -38,6 +41,39 @@ public class Partie implements Serializable {
         this.calculateur = new CalculateurScore();
         this.extension = null;
         this.variante = null;
+        this.observateurs = new ArrayList<>();
+    }
+    
+    /**
+     * Ajoute un observateur à la partie.
+     * @param observateur Observateur à ajouter
+     */
+    public void ajouterObservateur(ObservateurPartie observateur) {
+        if (observateurs == null) {
+            observateurs = new ArrayList<>();
+        }
+        observateurs.add(observateur);
+    }
+    
+    /**
+     * Retire un observateur de la partie.
+     * @param observateur Observateur à retirer
+     */
+    public void retirerObservateur(ObservateurPartie observateur) {
+        if (observateurs != null) {
+            observateurs.remove(observateur);
+        }
+    }
+    
+    /**
+     * Notifie tous les observateurs.
+     */
+    private void notifierObservateurs(java.util.function.Consumer<ObservateurPartie> action) {
+        if (observateurs != null) {
+            for (ObservateurPartie obs : observateurs) {
+                action.accept(obs);
+            }
+        }
     }
 
     /**
@@ -93,6 +129,9 @@ public class Partie implements Serializable {
 
         // initialiser le tour
         this.tourActuel = 1;
+        
+        // Notifier les observateurs
+        notifierObservateurs(obs -> obs.notifierInitialisation(this.joueurs, nbTrophees));
     }
 
     /**
@@ -105,7 +144,15 @@ public class Partie implements Serializable {
             System.out.println("\n═══════════════════════════════════");
             System.out.println("         TOUR " + tourActuel);
             System.out.println("═══════════════════════════════════\n");
+            
+            // Notifier début du tour
+            notifierObservateurs(obs -> obs.notifierDebutTour(tourActuel));
+            
             boolean succes = executerTour();
+            
+            // Notifier fin du tour
+            notifierObservateurs(obs -> obs.notifierFinTour(tourActuel));
+            
             tourActuel++;
             return succes;
         }
@@ -125,11 +172,14 @@ public class Partie implements Serializable {
             tour.setCartesResiduelles(cartesResiduelles);
         }
         int nbCartes = variante.modifierDistribution(tour, pioche.getTaille(), joueurs.size());
+        
         // Phase 1 : Distribution
         Map<Joueur, List<Carte>> mains = tour.distribuerCartes(nbCartes);
+        notifierObservateurs(obs -> obs.notifierDistribution(mains));
 
         // Phase 2 : Création des offres
         tour.creerOffres(mains);
+        notifierObservateurs(obs -> obs.notifierOffresCreees(tour.getOffres()));
 
         // Phase 3 : Prises de cartes
         tour.executerPrisesCartes();
@@ -309,6 +359,9 @@ public class Partie implements Serializable {
 
         System.out.println("\n** VAINQUEUR : " + gagnant.getNom() + " **");
         System.out.println("═══════════════════════════════════\n");
+        
+        // Notifier les observateurs
+        notifierObservateurs(obs -> obs.notifierFinPartie(classement));
     }
 
     /**
@@ -319,6 +372,7 @@ public class Partie implements Serializable {
      */
     public void sauvegarder(String nomSauvegarde) throws IOException {
         GestionnaireSauvegarde.sauvegarder(this, nomSauvegarde);
+        notifierObservateurs(obs -> obs.notifierSauvegarde(nomSauvegarde));
     }
 
     /**
@@ -330,7 +384,9 @@ public class Partie implements Serializable {
      * @throws ClassNotFoundException Si classe non trouvée
      */
     public static Partie charger(String nomSauvegarde) throws IOException, ClassNotFoundException {
-        return GestionnaireSauvegarde.charger(nomSauvegarde);
+        Partie partie = GestionnaireSauvegarde.charger(nomSauvegarde);
+        // Les observateurs seront réattachés après le chargement
+        return partie;
     }
 
     /**
