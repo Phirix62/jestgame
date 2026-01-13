@@ -33,9 +33,6 @@ public class VarianteTactique implements Variante {
     
     @Override
     public void modifierScoring(CalculateurScore calculateur) {
-        // TODO: Modifier la règle des As
-        // Nécessite refactorisation de As.getValeurEffective()
-        // ou injection d'un modificateur dans le calculateur
     }
     
     @Override

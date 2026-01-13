@@ -1,0 +1,11 @@
+jest
+jest.controleur
+jest.modele.cartes
+jest.modele.extensions
+jest.modele.jeu
+jest.modele.joueurs
+jest.modele.score
+jest.modele.utilitaires
+jest.vue
+jest.vue.graphique
+jest.vue.terminal

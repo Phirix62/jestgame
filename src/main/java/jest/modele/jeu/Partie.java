@@ -4,6 +4,7 @@ import jest.modele.cartes.*;
 import jest.modele.joueurs.Joueur;
 import jest.modele.score.CalculateurScore;
 import jest.modele.utilitaires.GestionnaireSauvegarde;
+import jest.modele.utilitaires.GestionnaireScores;
 import jest.modele.extensions.*;
 import jest.controleur.ObservateurPartie;
 
@@ -14,8 +15,8 @@ import java.util.*;
 /**
  * Classe principale du moteur de jeu Jest.
  * Orchestre le déroulement complet d'une partie.
- * Pattern Façade : point d'entrée unique pour toute l'application.
- * Pattern Observateur : notifie les vues des changements d'état.
+ * Classe façade du modèle
+ * Pattern Observateur : notifie les vues des changements d'état via le contrôleur
  */
 public class Partie implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -24,11 +25,14 @@ public class Partie implements Serializable {
     private Pioche pioche;
     private List<Trophee> tropheesEnJeu;
     private int tourActuel;
-    private boolean extensionActive;
     private CalculateurScore calculateur;
     private Extension extension;
     private Variante variante;
     private transient List<ObservateurPartie> observateurs;
+    
+    // Gestionnaires dédiés (SRP)
+    private GestionnaireScores gestionnaireScores;
+    private List<Carte> cartesResiduelles;
 
     /**
      * Constructeur de Partie.
@@ -42,6 +46,7 @@ public class Partie implements Serializable {
         this.extension = null;
         this.variante = null;
         this.observateurs = new ArrayList<>();
+        this.gestionnaireScores = new GestionnaireScores();
     }
     
     /**
@@ -92,7 +97,6 @@ public class Partie implements Serializable {
         this.extension = extension;
         this.variante = variante;
 
-        // Initialiser et mélanger le paquet
         paquet.initialiser(extension);
         paquet.melanger();
 
@@ -112,26 +116,12 @@ public class Partie implements Serializable {
         pioche = new Pioche(cartesRestantes);
         pioche.melanger();
 
-        System.out.println("\n=== PARTIE INITIALISÉE ===");
-        System.out.println("Joueurs : " + joueurs.size());
-        for (Joueur j : joueurs) {
-            System.out.println("  - " + j.getNom());
-        }
-        if (extension != null) {
-            System.out.println("\nExtension utilisée : " + extension.getNom());
-            System.out.println(extension.getDescription());
-        }
-        System.out.println("\nTrophées en jeu :");
-        for (Trophee t : tropheesEnJeu) {
-            System.out.println("  " + t);
-        }
-        System.out.println("\nPioche : " + pioche.getTaille() + " cartes");
-
-        // initialiser le tour
+        // Initialiser le tour
         this.tourActuel = 1;
         
         // Notifier les observateurs
         notifierObservateurs(obs -> obs.notifierInitialisation(this.joueurs, nbTrophees));
+        notifierObservateurs(obs -> obs.notifierDetailsInitialisation(extension, tropheesEnJeu, pioche.getTaille()));
     }
 
     /**
@@ -141,10 +131,6 @@ public class Partie implements Serializable {
      */
     public boolean executerProchainTour() {
         if (!estTerminee()) {
-            System.out.println("\n═══════════════════════════════════");
-            System.out.println("         TOUR " + tourActuel);
-            System.out.println("═══════════════════════════════════\n");
-            
             // Notifier début du tour
             notifierObservateurs(obs -> obs.notifierDebutTour(tourActuel));
             
@@ -192,178 +178,100 @@ public class Partie implements Serializable {
         return true;
     }
 
-    private List<Carte> cartesResiduelles; // Stockage temporaire
-
     /**
-     * Vérifie si la partie est terminée (pioche vide).
+     * Vérifie si la partie est terminée.
      * 
      * @return true si fin de partie
      */
-    private boolean verifierFinPartie() {
+    public boolean estTerminee() {
         boolean cartesInsuffisantes = false;
-        int nbJoueurs = joueurs.size();
-        int cartesMinimales = nbJoueurs * 2;
-        if(tourActuel <= 1) {
-            cartesInsuffisantes = false;
+        
+        if (tourActuel > 1) {
+            int nbJoueurs = joueurs.size();
+            int cartesMinimales = nbJoueurs * 2;
+            cartesInsuffisantes = (cartesResiduelles.size() + pioche.getTaille()) < cartesMinimales;
         }
-        else if ((cartesResiduelles.size() + pioche.getTaille()) < cartesMinimales) {
-            cartesInsuffisantes = true;
-        }
+        
         return variante.verifierFinPartie(cartesInsuffisantes, tourActuel);
     }
 
     /**
-     * Indique si la partie est terminée (appel depuis main)
-     * 
-     * @return true si terminée
-     */
-    public boolean estTerminee() {
-        return verifierFinPartie();
-    }
-
-    /**
-     * Affiche les résultats finaux de la partie (appel depuis main)
+     * Termine la partie : récupération dernières cartes, attribution trophées, scores.
      */
     public void afficherResultatsFinaux() {
-        if (estTerminee()) {
-            terminerPartie();
+        if (!estTerminee()) {
+            return;
         }
+        // 1. Récupérer les dernières cartes
+        Map<Joueur, Carte> recuperations = recupererDernieresCartes();
+        if (!recuperations.isEmpty()) {
+            notifierObservateurs(obs -> obs.notifierRecuperationDernieresCartes(recuperations));
+        }
+
+        // 2. Révéler tous les Jests
+        for (Joueur joueur : joueurs) {
+            joueur.getJest().revelerCartes();
+        }
+        notifierObservateurs(obs -> obs.notifierRevelationJests(joueurs));
+        
+        // 3. Calculer les scores de base (sans trophées)
+        Map<Joueur, Integer> scoresBase = new HashMap<>();
+        Map<Joueur, String> detailsBase = new HashMap<>();
+        for (Joueur joueur : joueurs) {
+            int score = calculateur.calculerScore(joueur.getJest(), true);
+            joueur.setScore(score);
+            scoresBase.put(joueur, score);
+            detailsBase.put(joueur, calculateur.afficherDetailScore(joueur.getJest()));
+        }
+        notifierObservateurs(obs -> obs.notifierScoresBase(scoresBase, detailsBase));
+
+        // 4. Attribuer les trophées avec notification individuelle
+        attribuerTropheesAvecNotification();
+
+        // 5. Recalculer les scores finaux (avec trophées)
+        Map<Joueur, Integer> scoresFinaux = new HashMap<>();
+        Map<Joueur, String> detailsFinaux = new HashMap<>();
+        for (Joueur joueur : joueurs) {
+            int scoreFinal = calculateur.calculerScore(joueur.getJest(), false);
+            joueur.setScore(scoreFinal);
+            scoresFinaux.put(joueur, scoreFinal);
+            detailsFinaux.put(joueur, calculateur.afficherDetailScore(joueur.getJest()));
+        }
+        notifierObservateurs(obs -> obs.notifierScoresFinaux(scoresFinaux, detailsFinaux));
+
+        // 6. Déterminer le classement et notifier fin de partie
+        List<Joueur> classement = gestionnaireScores.obtenirClassement(joueurs);
+        notifierObservateurs(obs -> obs.notifierFinPartie(classement));
     }
-
+    
     /**
-     * Termine la partie : récupération dernières cartes, attribution trophées,
-     * scores.
+     * Fait récupérer à chaque joueur sa dernière carte résiduelle.
+     * @return Map des récupérations (joueur -> carte)
      */
-    private void terminerPartie() {
-        System.out.println("\n");
-        System.out.println("═══════════════════════════════════");
-        System.out.println("         FIN DE PARTIE");
-        System.out.println("═══════════════════════════════════");
-
-        // Chaque joueur récupère la dernière carte de son offre (cartes résiduelles)
+    private Map<Joueur, Carte> recupererDernieresCartes() {
+        Map<Joueur, Carte> recuperations = new HashMap<>();
         if (cartesResiduelles != null && !cartesResiduelles.isEmpty()) {
-            System.out.println("\nRécupération des dernières cartes...");
             for (int i = 0; i < joueurs.size() && i < cartesResiduelles.size(); i++) {
                 Joueur joueur = joueurs.get(i);
                 Carte carte = cartesResiduelles.get(i);
                 joueur.ajouterCarteAuJest(carte);
-                System.out.println(joueur.getNom() + " récupère " + carte.toStringCourt());
+                recuperations.put(joueur, carte);
             }
         }
-
-        // Révéler tous les Jests
-        System.out.println("\n--- Révélation des Jests ---");
-        for (Joueur joueur : joueurs) {
-            joueur.getJest().revelerCartes();
-            System.out.println(joueur.getNom() + " : " + joueur.getJest().afficherDetails());
-        }
-        
-        System.out.println("\n--- Calcul des scores ---");
-        // Calculer les scores de base (sans trophées)
-        for (Joueur joueur : joueurs) {
-            int score = calculateur.calculerScore(joueur.getJest(), true);
-            joueur.setScore(score);
-            System.out.println(joueur.getNom() + " : " + score + " points");
-            System.out.println(calculateur.afficherDetailScore(joueur.getJest()));
-        }
-
-        attribuerTrophees();
-
-        // Recalculer les scores finaux (avec trophées)
-        calculerScoresFinal();
-
-        Joueur gagnant = determinerGagnant();
-        afficherResultatsFinaux(gagnant);
+        return recuperations;
     }
-
+    
     /**
-     * Attribue les trophées aux joueurs selon les conditions.
+     * Attribue les trophées avec notification individuelle pour chaque attribution.
      */
-    private void attribuerTrophees() {
-        System.out.println("\n--- Attribution des trophées ---");
-
+    private void attribuerTropheesAvecNotification() {
         for (Trophee trophee : tropheesEnJeu) {
             Joueur gagnant = trophee.evaluerCondition(joueurs);
             if (gagnant != null) {
                 gagnant.getJest().ajouterTrophee(trophee);
-                System.out.println(
-                        "Trophée " + trophee.getCondition().getDescription() + "(" + trophee.toStringCourt() + ") " +
-                                " --> " + gagnant.getNom());
-            } else {
-                System.out.println("Trophée " + trophee.getCondition().getDescription() +
-                        " --> Aucun gagnant");
             }
+            notifierObservateurs(obs -> obs.notifierAttributionTrophee(trophee, gagnant));
         }
-    }
-
-    /**
-     * Calcule les scores finaux de tous les joueurs (avec trophées).
-     */
-    private void calculerScoresFinal() {
-        System.out.println("\n--- Calcul des scores finaux avec trophées ---");
-        for (Joueur joueur : joueurs) {
-            int scoreFinal = calculateur.calculerScore(joueur.getJest(), false);
-            joueur.setScore(scoreFinal);
-            System.out.println(joueur.getNom() + " : " + scoreFinal + " points");
-            System.out.println(calculateur.afficherDetailScore(joueur.getJest()));
-        }
-    }
-
-    /**
-     * Détermine le joueur gagnant (score le plus élevé).
-     * 
-     * @return Joueur gagnant
-     */
-    public Joueur determinerGagnant() {
-        Joueur gagnant = null;
-        int scoreMax = Integer.MIN_VALUE;
-
-        for (Joueur joueur : joueurs) {
-            if (joueur.getScore() > scoreMax) {
-                scoreMax = joueur.getScore();
-                gagnant = joueur;
-            } else if (joueur.getScore() == scoreMax) {
-                // cas d'égalité : carte la plus haute
-                if (gagnant != null) {
-                    Carte c1 = gagnant.getJest().getCartePlusHauteGlobale();
-                    Carte c2 = joueur.getJest().getCartePlusHauteGlobale();
-                    if (c2 != null && (c1 == null || c2.comparerForce(c1) > 0)) {
-                        gagnant = joueur;
-                    }
-                }
-            }
-        }
-
-        return gagnant;
-    }
-
-    /**
-     * Affiche les résultats finaux de la partie.
-     * 
-     * @param gagnant Joueur gagnant
-     */
-    private void afficherResultatsFinaux(Joueur gagnant) {
-        System.out.println("\n");
-        System.out.println("═══════════════════════════════════");
-        System.out.println("       RÉSULTATS FINAUX");
-        System.out.println("═══════════════════════════════════");
-
-        // Trier les joueurs par score décroissant
-        List<Joueur> classement = new ArrayList<>(joueurs);
-        classement.sort((j1, j2) -> Integer.compare(j2.getScore(), j1.getScore()));
-
-        for (int i = 0; i < classement.size(); i++) {
-            Joueur j = classement.get(i);
-            String rang = (i + 1) + ". ";
-            String trophees = j.getJest().getTrophees().isEmpty() ? "" : " Trophée*" + j.getJest().getTrophees().size();
-            System.out.println(rang + j.getNom() + " : " + j.getScore() + " points" + trophees);
-        }
-
-        System.out.println("\n** VAINQUEUR : " + gagnant.getNom() + " **");
-        System.out.println("═══════════════════════════════════\n");
-        
-        // Notifier les observateurs
-        notifierObservateurs(obs -> obs.notifierFinPartie(classement));
     }
 
     /**
@@ -456,15 +364,6 @@ public class Partie implements Serializable {
     }
 
     /**
-     * Indique si l'extension est active.
-     * 
-     * @return true si extension active
-     */
-    public boolean isExtensionActive() {
-        return extensionActive;
-    }
-
-    /**
      * Retourne la liste des trophées en jeu.
      * 
      * @return Liste des trophées
@@ -524,6 +423,9 @@ public class Partie implements Serializable {
 
         // Réinitialiser le calculateur
         this.calculateur = new CalculateurScore();
+        
+        // Réinitialiser les gestionnaires
+        this.gestionnaireScores = new GestionnaireScores();
     }
 
 }

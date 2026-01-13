@@ -1,172 +1,66 @@
-# 🃏 Jest Game
+# Jest Game
 
-Jeu de cartes stratégique développé en Java dans le cadre du projet LO02.
+Projet LO02 - Jeu de cartes Jest en Java
 
-## 📋 Description
+## Description
 
-Jest est un jeu de cartes compétitif où les joueurs doivent constituer la meilleure collection (Jest) en choisissant stratégiquement des cartes parmi les offres des autres joueurs. Le jeu propose plusieurs variantes de règles et extensions pour enrichir l'expérience.
+Implémentation du jeu de cartes Jest où les joueurs doivent constituer le meilleur Jest en choisissant stratégiquement dans les offres des adversaires.
 
-### Caractéristiques
+## Fonctionnalités
 
-- 🎮 **3 ou 4 joueurs** (humains ou IA)
-- 🤖 **Stratégies IA variées** (aléatoire, gloutonnee, défensive, etc.)
-- 🎴 **Extensions** avec cartes spéciales (Cartes Magiques)
-- ⚙️ **Variantes de règles** (Standard, Tactique, Rapide)
-- 💾 **Système de sauvegarde/chargement**
-- 🏆 **Système de trophées** et scoring
+- 3 ou 4 joueurs (humains ou IA)
+- 3 stratégies IA : aléatoire, gloutonne, défensive
+- Extension Cartes Magiques
+- 3 variantes : Standard, Tactique, Rapide
+- Sauvegarde/chargement de parties
+- **Double interface** : Terminal + Interface Graphique (Swing)
+- La concurrence entre les vues n'est pas fonctionelle.
 
-## 🛠️ Technologies
+## Technos
 
-- **Java 25**
-- **Maven 3.x**
-- **Architecture MVC** avec patterns (Visitor, Strategy, Facade)
+- Java 25
+- Maven 3.9
+- Swing pour l'interface graphique
 
-## 📦 Installation
+## Commandes utiles
 
-### Prérequis
-
-- Java JDK 11 ou supérieur
-- Maven 3.6 ou supérieur
-
-### Cloner le projet
-
+### Execution
 ```bash
-git clone https://github.com/Phirix62/jestgame.git
-cd jest-game
-```
+# Compiler
+mvn clean compile
 
-## 🚀 Utilisation
-
-### Lancer le jeu
-
-```bash
-# Compiler et exécuter directement
-mvn clean compile exec:java
-
-# Ou simplement (si déjà compilé)
+# Lancer
 mvn exec:java
 ```
-
-### Créer un JAR exécutable
-
-```bash
-# Compiler et créer le JAR
-mvn clean package
-
-# Le JAR est créé dans target/
-# Exécuter le JAR
-java -jar target/jestgame-1.0-SNAPSHOT.jar
-```
-
-### Modes de jeu
-
-Au lancement, vous pouvez :
-1. **Nouvelle partie** - Configurer et démarrer une nouvelle partie
-2. **Charger une partie** - Reprendre une partie sauvegardée
-3. **Quitter**
-
-## 📚 Documentation
 
 ### Générer la Javadoc
 
 ```bash
 # Générer la documentation dans le dossier docs/
 mvn javadoc:javadoc
-
-# Ouvrir la documentation
-# Windows
-start docs\index.html
-
-# Linux
-xdg-open docs/index.html
-
-# Mac
-open docs/index.html
 ```
 
-### Générer un JAR de documentation
+### Générer le jar 
 
 ```bash
-# Crée target/jestgame-1.0-SNAPSHOT-javadoc.jar
-mvn javadoc:jar
-```
-
-## 🏗️ Structure du projet
-
-```
-jest-game/
-├── src/
-│   └── main/
-│       └── java/
-│           └── jest/
-│               ├── modele/
-│               │   ├── cartes/        # Classes des cartes
-│               │   ├── jeu/           # Moteur de jeu
-│               │   ├── joueurs/       # Joueurs et stratégies
-│               │   ├── score/         # Calcul des scores
-│               │   └── extensions/    # Extensions et variantes
-│               └── utilitaires/       # Outils (sauvegarde, etc.)
-├── docs/                              # Documentation Javadoc
-├── sauvegardes/                       # Parties sauvegardées
-├── pom.xml                            # Configuration Maven
-└── README.md
-```
-
-## 🎯 Commandes Maven utiles
-
-### Compilation et build
-
-```bash
-# Nettoyer le projet
-mvn clean
-
-# Compiler uniquement
-mvn compile
-
-# Exécuter les tests (si présents)
-mvn test
-
-# Créer le package (JAR)
-mvn package
-
-# Cycle complet
+# Générer la documentation dans le dossier docs/
 mvn clean package
 ```
 
-### Exécution
+##  Structure du projet
 
-```bash
-# Exécuter l'application
-mvn exec:java
+Structure MVC respecté au maximum.
 
-# Avec arguments personnalisés
-mvn exec:java -Dexec.args="arg1 arg2"
-```
+- Le modèle contient tout le coeur du jeu
+- Le contrôleur gère l'initialisation et les interactions entre les vues et le modèle via le pattern observer
 
-### Documentation
+Les principes SOLID ont été appliqué au maximum, en essayant de garder le code clair et lisible. Quelques fichiers font exception : 
 
-```bash
-# Générer la Javadoc
-mvn javadoc:javadoc
+- partie.java qui est la façade du modèle
+- Les 2 fichiers Vue qui affichent beaucoup d'élements, récupèrent les notifications. Typiquement VueTerminal.java et VueGraphique.java
 
-# Générer un JAR de documentation
-mvn javadoc:jar
 
-# Générer le site complet (avec profil)
-mvn site -Pdocumentation
-```
-
-### Nettoyage
-
-```bash
-# Supprimer target/ et docs/
-mvn clean
-
-# Supprimer uniquement la Javadoc
-mvn clean:clean@clean-javadoc
-```
-
-## 🎮 Règles du jeu
+##  Règles du jeu
 
 ### Objectif
 
@@ -181,7 +75,7 @@ Collecter les cartes qui rapportent le plus de points en fin de partie pour remp
 
 ### Scoring
 
-- Voir règles officielles
+- Voir règles sur le pdf
 
 ### Trophées
 
@@ -191,13 +85,13 @@ Collecter les cartes qui rapportent le plus de points en fin de partie pour remp
 - **Best Jest** : Meilleur Jest
 - **Joker** : Détient le Joker
 
-## 🤖 Stratégies IA disponibles
+##  Stratégies IA disponibles
 
 - **Aléatoire** : Choix au hasard
 - **Gloutonne** : Privilégie les cartes à haute valeur faciale
 - **Défensive** : Evite les carreaux et ne prend pas de risques
 
-## 🎴 Extensions
+##  Extensions
 
 ### Cartes Magiques
 
@@ -213,35 +107,10 @@ Règles classiques du jeu (2 cartes par main)
 
 ### Tactique
 - 3 cartes par main
-- Plus de choix stratégiques
 
 ### Rapide
-- Partie limitée à 3 tours
+- 3 tour maximum
 
-## 💾 Système de sauvegarde
-
-Les parties sont sauvegardées dans le dossier `sauvegardes/` au format `.jest` (sérialisation Java).
-
-```bash
-# Structure d'une sauvegarde
-sauvegardes/
-├── ma_partie.jest
-├── partie_1234567890.jest
-└── ...
-```
-
-## 🏗️ Status
-
-![Build Status](https://github.com/Phirix62/jestgame/workflows/CI%20Status/badge.svg)
-![Javadoc](https://github.com/Phirix62/jestgame/workflows/Generate%20and%20Deploy%20Javadoc/badge.svg)
-
-
-## 👥 Auteurs
-
-- **Nathan Honoré et Ayat Atraoui** - Projet LO02 - UTT
-## 📄 Licence
-
-Ce projet est développé dans le cadre académique du cours LO02 à l'UTT.
 
 ## 🔗 Liens utiles
 
@@ -250,4 +119,14 @@ Ce projet est développé dans le cadre académique du cours LO02 à l'UTT.
 
 ---
 
-**Note** : Ce projet nécessite Java 11+ pour fonctionner correctement.
+## Sauvegarde
+
+Fichiers `.jest` dans le dossier `sauvegardes/`
+
+## 📄 Licence
+
+Ce projet est développé dans le cadre académique du cours LO02 à l'UTT.
+
+## Auteurs
+
+Nathan Honoré et Ayat Atraoui - LO02 - UTT

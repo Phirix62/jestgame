@@ -1,9 +1,6 @@
 package jest.vue;
 
 import jest.controleur.ControleurJeu;
-import jest.modele.joueurs.Joueur;
-import jest.modele.extensions.Extension;
-import jest.modele.extensions.Variante;
 
 import java.util.List;
 
@@ -20,7 +17,7 @@ public interface Vue {
     void initialiser(ControleurJeu controleur);
     
     /**
-     * Démarre la vue (affichage ou lancement).
+     * Démarre la vue
      */
     void demarrer();
     

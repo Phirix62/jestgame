@@ -2,6 +2,8 @@ package jest.vue;
 
 import jest.modele.cartes.Carte;
 import jest.modele.jeu.Offre;
+import jest.vue.terminal.VueTerminal;
+import jest.vue.graphique.VueGraphique;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -10,6 +12,8 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Permet d'utiliser le terminal ET la GUI simultanément.
  * Le joueur peut répondre dans l'une ou l'autre interface - la première réponse gagne.
+ * Essaye de gérer proprement l'annulation de l'interface perdante.
+ * Dans les fait ce mécanisme n'est pas fonctionelle à 100%
  */
 public class GestionnaireConcurrent implements GestionnaireInteraction {
     private final VueTerminal vueTerminal;
@@ -24,6 +28,7 @@ public class GestionnaireConcurrent implements GestionnaireInteraction {
     public Carte choisirCarteOffre(String joueurNom, List<Carte> main) {
         AtomicReference<Carte> resultat = new AtomicReference<>();
         AtomicBoolean termine = new AtomicBoolean(false);
+        AtomicBoolean terminalGagne = new AtomicBoolean(false);
         Object lock = new Object();
         
         // Thread 1 : Terminal
@@ -31,7 +36,10 @@ public class GestionnaireConcurrent implements GestionnaireInteraction {
             try {
                 Carte choix = vueTerminal.choisirCarteOffre(joueurNom, main);
                 if (termine.compareAndSet(false, true)) {
+                    terminalGagne.set(true);
                     resultat.set(choix);
+                    // Annuler l'interface graphique
+                    vueGraphique.annulerDialogues();
                     synchronized (lock) {
                         lock.notify();
                     }
@@ -46,6 +54,7 @@ public class GestionnaireConcurrent implements GestionnaireInteraction {
             try {
                 Carte choix = vueGraphique.choisirCarteOffre(joueurNom, main);
                 if (termine.compareAndSet(false, true)) {
+                    terminalGagne.set(false);
                     resultat.set(choix);
                     synchronized (lock) {
                         lock.notify();
@@ -64,14 +73,27 @@ public class GestionnaireConcurrent implements GestionnaireInteraction {
                 try {
                     lock.wait();
                 } catch (InterruptedException e) {
+                    threadTerminal.interrupt();
+                    threadGUI.interrupt();
+                    vueGraphique.annulerDialogues();
                     return main.get(0);
                 }
             }
         }
         
-        // Interrompre les threads pour arrêter les lectures en attente
-        threadTerminal.interrupt();
-        threadGUI.interrupt();
+        // Interrompre le thread perdant
+        if (terminalGagne.get()) {
+            threadGUI.interrupt();
+        } else {
+            threadTerminal.interrupt();
+        }
+        
+        // Attendre un peu que les threads se terminent proprement
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         
         return resultat.get();
     }
@@ -80,13 +102,16 @@ public class GestionnaireConcurrent implements GestionnaireInteraction {
     public Offre choisirOffreCible(String joueurNom, List<Offre> offres) {
         AtomicReference<Offre> resultat = new AtomicReference<>();
         AtomicBoolean termine = new AtomicBoolean(false);
+        AtomicBoolean terminalGagne = new AtomicBoolean(false);
         Object lock = new Object();
         
         Thread threadTerminal = new Thread(() -> {
             try {
                 Offre choix = vueTerminal.choisirOffreCible(joueurNom, offres);
                 if (termine.compareAndSet(false, true)) {
+                    terminalGagne.set(true);
                     resultat.set(choix);
+                    vueGraphique.annulerDialogues();
                     synchronized (lock) {
                         lock.notify();
                     }
@@ -100,6 +125,7 @@ public class GestionnaireConcurrent implements GestionnaireInteraction {
             try {
                 Offre choix = vueGraphique.choisirOffreCible(joueurNom, offres);
                 if (termine.compareAndSet(false, true)) {
+                    terminalGagne.set(false);
                     resultat.set(choix);
                     synchronized (lock) {
                         lock.notify();
@@ -118,13 +144,25 @@ public class GestionnaireConcurrent implements GestionnaireInteraction {
                 try {
                     lock.wait();
                 } catch (InterruptedException e) {
+                    threadTerminal.interrupt();
+                    threadGUI.interrupt();
+                    vueGraphique.annulerDialogues();
                     return offres.get(0);
                 }
             }
         }
         
-        threadTerminal.interrupt();
-        threadGUI.interrupt();
+        if (terminalGagne.get()) {
+            threadGUI.interrupt();
+        } else {
+            threadTerminal.interrupt();
+        }
+        
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         
         return resultat.get();
     }
@@ -133,13 +171,16 @@ public class GestionnaireConcurrent implements GestionnaireInteraction {
     public Carte choisirCarteDansOffre(String joueurNom, Offre offre) {
         AtomicReference<Carte> resultat = new AtomicReference<>();
         AtomicBoolean termine = new AtomicBoolean(false);
+        AtomicBoolean terminalGagne = new AtomicBoolean(false);
         Object lock = new Object();
         
         Thread threadTerminal = new Thread(() -> {
             try {
                 Carte choix = vueTerminal.choisirCarteDansOffre(joueurNom, offre);
                 if (termine.compareAndSet(false, true)) {
+                    terminalGagne.set(true);
                     resultat.set(choix);
+                    vueGraphique.annulerDialogues();
                     synchronized (lock) {
                         lock.notify();
                     }
@@ -153,6 +194,7 @@ public class GestionnaireConcurrent implements GestionnaireInteraction {
             try {
                 Carte choix = vueGraphique.choisirCarteDansOffre(joueurNom, offre);
                 if (termine.compareAndSet(false, true)) {
+                    terminalGagne.set(false);
                     resultat.set(choix);
                     synchronized (lock) {
                         lock.notify();
@@ -171,14 +213,26 @@ public class GestionnaireConcurrent implements GestionnaireInteraction {
                 try {
                     lock.wait();
                 } catch (InterruptedException e) {
+                    threadTerminal.interrupt();
+                    threadGUI.interrupt();
+                    vueGraphique.annulerDialogues();
                     List<Carte> visibles = offre.getCartesVisibles();
                     return !visibles.isEmpty() ? visibles.get(0) : offre.getCarteCachee();
                 }
             }
         }
         
-        threadTerminal.interrupt();
-        threadGUI.interrupt();
+        if (terminalGagne.get()) {
+            threadGUI.interrupt();
+        } else {
+            threadTerminal.interrupt();
+        }
+        
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         
         return resultat.get();
     }

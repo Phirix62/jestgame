@@ -4,22 +4,21 @@ import jest.modele.jeu.Partie;
 import jest.modele.joueurs.Joueur;
 import jest.modele.extensions.Extension;
 import jest.modele.extensions.Variante;
-import jest.modele.cartes.Carte;
-import jest.modele.jeu.Offre;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Contrôleur principal du jeu Jest (pattern MVC).
- * Coordonne les interactions entre le modèle (Partie) et les vues (Terminal/Graphique).
- * Gère les actions utilisateur et synchronise les vues.
+ * Contrôleur principal
+ * - Fait le pont entre le modèle et les vues
+ * - Gère les observateurs
  */
 public class ControleurJeu {
     private Partie partie;
     
     /**
      * Constructeur du contrôleur.
+     * Initialise une partie vide.
      */
     public ControleurJeu() {
         this.partie = new Partie();
