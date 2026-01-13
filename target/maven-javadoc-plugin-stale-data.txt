@@ -20,7 +20,7 @@
 -doctitle
 '<h1>Jest - Jeu de cartes stratégique</h1>'
 -header
-'<b>Jest Game v1.0-SNAPSHOT</b>'
+'<b>Jest Game v2.0.0</b>'
 -use
 -version
 -windowtitle
@@ -37,20 +37,20 @@ jest.vue
 jest.vue.graphique
 jest.vue.terminal
 H:\études\LO02\jestgame\src\main\java = 1762615833384
-H:\études\LO02\jestgame\target\generated-sources\annotations = 1768326274741
-H:\études\LO02\jestgame\docs\allclasses-index.html = 1768326287971
-H:\études\LO02\jestgame\docs\allpackages-index.html = 1768326287978
-H:\études\LO02\jestgame\docs\constant-values.html = 1768326287487
-H:\études\LO02\jestgame\docs\element-list = 1768326287329
-H:\études\LO02\jestgame\docs\help-doc.html = 1768326288065
-H:\études\LO02\jestgame\docs\index-all.html = 1768326288052
-H:\études\LO02\jestgame\docs\index.html = 1768326287931
-H:\études\LO02\jestgame\docs\member-search-index.js = 1768326287991
-H:\études\LO02\jestgame\docs\module-search-index.js = 1768326287981
-H:\études\LO02\jestgame\docs\overview-summary.html = 1768326288058
-H:\études\LO02\jestgame\docs\overview-tree.html = 1768326287925
-H:\études\LO02\jestgame\docs\package-search-index.js = 1768326287983
-H:\études\LO02\jestgame\docs\search.html = 1768326288055
-H:\études\LO02\jestgame\docs\serialized-form.html = 1768326287509
-H:\études\LO02\jestgame\docs\tag-search-index.js = 1768326287994
-H:\études\LO02\jestgame\docs\type-search-index.js = 1768326287985
+H:\études\LO02\jestgame\target\generated-sources\annotations = 1768328059693
+H:\études\LO02\jestgame\docs\allclasses-index.html = 1768328065774
+H:\études\LO02\jestgame\docs\allpackages-index.html = 1768328065778
+H:\études\LO02\jestgame\docs\constant-values.html = 1768328065457
+H:\études\LO02\jestgame\docs\element-list = 1768328065372
+H:\études\LO02\jestgame\docs\help-doc.html = 1768328065830
+H:\études\LO02\jestgame\docs\index-all.html = 1768328065820
+H:\études\LO02\jestgame\docs\index.html = 1768328065744
+H:\études\LO02\jestgame\docs\member-search-index.js = 1768328065788
+H:\études\LO02\jestgame\docs\module-search-index.js = 1768328065780
+H:\études\LO02\jestgame\docs\overview-summary.html = 1768328065827
+H:\études\LO02\jestgame\docs\overview-tree.html = 1768328065740
+H:\études\LO02\jestgame\docs\package-search-index.js = 1768328065781
+H:\études\LO02\jestgame\docs\search.html = 1768328065823
+H:\études\LO02\jestgame\docs\serialized-form.html = 1768328065473
+H:\études\LO02\jestgame\docs\tag-search-index.js = 1768328065790
+H:\études\LO02\jestgame\docs\type-search-index.js = 1768328065784
