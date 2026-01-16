@@ -1,5 +1,6 @@
 jest
 jest.controleur
+jest.modele
 jest.modele.cartes
 jest.modele.extensions
 jest.modele.jeu
