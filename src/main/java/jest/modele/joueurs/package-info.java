@@ -10,7 +10,7 @@
  * 
  * <h2>Pattern Strategy</h2>
  * <p>Les stratégies IA sont interchangeables grâce au pattern Strategy.
- * Chaque IA implémente l'interface {@link jest.modele.joueurs.Strategie}.</p>
+ * Chaque IA implémente l'interface {@link jest.modele.joueurs.StrategieJeu}.</p>
  * 
  * <h3>Stratégies disponibles</h3>
  * <ul>

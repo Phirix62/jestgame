@@ -10,7 +10,6 @@
  * <ul>
  *   <li>{@link jest.modele.score.CalculateurScore} - Calcule le score total d'un Jest</li>
  *   <li>{@link jest.modele.score.VisiteurScore} - Interface Visitor pour le calcul</li>
- *   <li>{@link jest.modele.score.VisiteurScoreCouleur} - Calcule le score par couleur</li>
  * </ul>
  * 
  * <h2>Règles de scoring</h2>
